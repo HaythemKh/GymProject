@@ -1,0 +1,85 @@
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { isEmpty } from 'class-validator';
+import { Model } from 'mongoose';
+import { GymService } from 'src/gym/gym.service';
+import { EquipmentSchema,EquipmentDocument,Equipment } from 'src/Schemas/equipment.models';
+import { CreateEquipmentDto } from './dto/create-equipment.dto';
+import { UpdateEquipmentDto } from './dto/update-equipment.dto';
+import { EquipmentModule } from './equipment.module';
+import { equipment } from './Model/equipment.model';
+EquipmentSchema
+
+
+@Injectable()
+export class EquipmentService {
+
+  constructor(
+    @InjectModel(Equipment.name) private EquipmentModel : Model<EquipmentDocument>,
+    @Inject(GymService) private  gymService : GymService
+  ){}
+  
+  async create(createEquipmentDto: CreateEquipmentDto) {
+    this.verifValidId(createEquipmentDto.Gym);
+    if(!(await this.gymService.verifGymExistID(createEquipmentDto.Gym))) throw new NotFoundException("This gym doesn't exist ");
+
+    const created = await this.EquipmentModel.create(createEquipmentDto);
+    if(!created) throw new NotFoundException("problem with Equipment creation ");
+    await this.gymService.addEquipmentToList(createEquipmentDto.Gym,created._id);
+
+     return {"message" : "Equipment added successfully"};
+    
+  }
+
+  verifValidId(id: string){
+    const isHexString = /^[0-9a-fA-F]+$/.test(id);
+    if(!isHexString || id.length != 24)
+     throw new NotFoundException("invalid ID");
+  }
+
+  async findAll() : Promise<equipment[]> {
+    const AllEquipments = await this.EquipmentModel.find().exec();
+    let listEquipments : equipment[] = [] ;
+    AllEquipments.map(EquipmentJson => {
+      listEquipments.push(new equipment(EquipmentJson));
+    });
+
+    return  listEquipments;
+  }
+
+  async findOne(id: string) :Promise<equipment> {
+    this.verifValidId(id);
+    const currrentEquip = await this.EquipmentModel.findOne({_id: id}).exec();
+    if(isEmpty(currrentEquip)) throw new NotFoundException("equipment doesn't exist");
+
+    const Equipment : equipment = new equipment(currrentEquip);
+    return Equipment;
+  }
+
+   async update(id: string, updateEquipmentDto: UpdateEquipmentDto) : Promise<any> {
+    this.verifValidId(id);
+    const foundDocument = await this.EquipmentModel.findOne({ _id: id }).exec();
+
+    if(isEmpty(foundDocument)) throw new NotFoundException("subscription doesn't exist");
+
+    const Equipment : equipment = new equipment(updateEquipmentDto);
+    const updatedEquip = await this.EquipmentModel.findByIdAndUpdate(
+      {_id : id},
+      {$set: Equipment},
+      {new: true},
+    )
+
+    if(!isEmpty(updatedEquip)) return {"message" : "Equipment updated successfully"};
+    else throw new NotFoundException("updating Equipment denied");
+   }
+
+   async remove(id: string) : Promise<any> {
+    this.verifValidId(id);
+    const deletedEquip = await this.EquipmentModel.findByIdAndDelete({_id : id});
+    if(deletedEquip){ 
+      await this.gymService.RemoveEquipmentFromList(deletedEquip.Gym,deletedEquip._id);
+      return true;
+    } 
+    else throw new NotFoundException("Equipment doesn't exist");
+  }
+}
