@@ -18,7 +18,6 @@ export class UpdateSubscriptionDto{
 
     @IsOptional()
     @IsNumber()
-    @IsDecimal()
     Price : number;
 
 
