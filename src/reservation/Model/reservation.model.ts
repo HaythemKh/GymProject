@@ -3,8 +3,8 @@ export class reservation{
     public readonly _id : string;
     public readonly User : string;
     public readonly Equipment : string;
-    public readonly Start_time : Date;
-    public readonly End_time : Date;
+    public  Start_time : Date;
+    public  End_time : Date;
 
     constructor(anyData : any)
     {
@@ -14,5 +14,9 @@ export class reservation{
         this.Start_time = anyData.Start_time;
         this.End_time = anyData.End_time;
     }
+
+    setStartDate(time : string){this.Start_time = new Date(time);}
+    setEndDate(time : string){this.End_time = new Date(time);}
+    
 
 }

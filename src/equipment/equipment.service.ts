@@ -34,7 +34,12 @@ export class EquipmentService {
   verifValidId(id: string){
     const isHexString = /^[0-9a-fA-F]+$/.test(id);
     if(!isHexString || id.length != 24)
-     throw new NotFoundException("invalid ID");
+     throw new NotFoundException("invalid Equipment ID");
+  }
+  IsEquipmentExist(id : string) : boolean{
+    const currrentEquip =  this.EquipmentModel.findOne({_id: id}).exec();
+    return !isEmpty(currrentEquip);
+
   }
 
   async findAll() : Promise<equipment[]> {

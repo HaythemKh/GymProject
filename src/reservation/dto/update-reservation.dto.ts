@@ -21,4 +21,5 @@ export class UpdateReservationDto{
     @IsOptional()
     @IsDateString()
     End_time : string;
+
 }

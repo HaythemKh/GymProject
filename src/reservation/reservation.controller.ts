@@ -13,14 +13,14 @@ export class ReservationController {
     return await this.reservationService.create(createReservationDto);
   }
 
-  // @Get("/AllReservations")
-  // async findAll() : Promise<reservation[]> {
-  //   return this.reservationService.findAll();
-  // }
+  @Get("/AllReservations")
+  async findAll() : Promise<reservation[]> {
+    return await this.reservationService.findAll();
+  }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.reservationService.findOne(+id);
+  async findOne(@Param('id') id: string) : Promise<reservation> {
+    return await this.reservationService.findOne(id);
   }
 
   @Patch(':id')
@@ -29,7 +29,7 @@ export class ReservationController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reservationService.remove(+id);
+  async remove(@Param('id') id: string) : Promise<any> {
+    return await this.reservationService.remove(id);
   }
 }

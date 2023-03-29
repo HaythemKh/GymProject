@@ -90,6 +90,10 @@ export class UsersService {
    });
     return listTrainers;
  }
+ IsUserExist(id : string) : boolean {
+  const currrentUser =  this.userModel.findOne({_id: id}).exec();
+   return !isEmpty(currrentUser);
+ }
 
  
 
@@ -114,7 +118,7 @@ export class UsersService {
   verifValidId(id: string){
    const isHexString = /^[0-9a-fA-F]+$/.test(id);
    if(!isHexString || id.length != 24)
-    throw new NotFoundException("invalid ID");
+    throw new NotFoundException("invalid User ID");
  }
 
  async update(id: string, updateUserDto: UpdateUserDto) : Promise<any> {
