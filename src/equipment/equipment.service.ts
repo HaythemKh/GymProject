@@ -56,7 +56,6 @@ export class EquipmentService {
     this.verifValidId(id);
     const currrentEquip = await this.EquipmentModel.findOne({_id: id}).exec();
     if(isEmpty(currrentEquip)) throw new NotFoundException("equipment doesn't exist");
-
     const Equipment : equipment = new equipment(currrentEquip);
     return Equipment;
   }
@@ -77,6 +76,26 @@ export class EquipmentService {
     if(!isEmpty(updatedEquip)) return {"message" : "Equipment updated successfully"};
     else throw new NotFoundException("updating Equipment denied");
    }
+
+
+   async updateEquipmentStatusToFalse(equipment: string): Promise<void> {
+    const updateResult = await this.EquipmentModel.updateOne(
+      { _id: equipment },
+      { $set: { Availability: false } },
+    );
+  }
+  async isAvailable(equipId : string) : Promise<boolean> {
+    const currrentEquip = await this.EquipmentModel.findOne({_id: equipId}).exec();
+    
+    return currrentEquip.Availability === true;
+  }
+
+  async updateEquipmentStatusToTrue(equipment: string): Promise<void> {
+    const updateResult = await this.EquipmentModel.updateOne(
+      { _id: equipment },
+      { $set: { Availability: true } },
+    );
+  }
 
    async remove(id: string) : Promise<any> {
     this.verifValidId(id);

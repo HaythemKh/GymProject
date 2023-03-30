@@ -7,6 +7,7 @@ import { SubscriptionModule } from './subscription/subscription.module';
 import { GymConfigModule } from './gym-config/gym-config.module';
 import { EquipmentModule } from './equipment/equipment.module';
 import { ReservationModule } from './reservation/reservation.module';
+import { CourseModule } from './course/course.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { ReservationModule } from './reservation/reservation.module';
     SubscriptionModule,
     GymConfigModule,
     EquipmentModule,
-    ReservationModule
+    ReservationModule,
+    CourseModule
   ],
   controllers: [],
   providers: [],

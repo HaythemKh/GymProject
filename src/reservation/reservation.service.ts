@@ -26,9 +26,12 @@ export class ReservationService {
     let reserve : reservation = new reservation(createReservationDto);
     reserve.setStartDate(createReservationDto.Start_time)
     reserve.setEndDate(createReservationDto.End_time)
-
+    
+    if(! await this.equipmentService.isAvailable(reserve.Equipment)) throw new NotFoundException("this equipment is not available because she is reserved by another user");
     const created = await this.reservationModel.create(reserve);
     if(!created) throw new NotFoundException("problem with reservation");
+
+    this.equipmentService.updateEquipmentStatusToFalse(created.Equipment);
     return {"message" : "Reservation added successfully"};
 
   }
@@ -57,6 +60,12 @@ export class ReservationService {
 
     if(new Date() > date1)throw new NotFoundException("Current date is greater than reservation start time");
     if( new Date() > date2)throw new NotFoundException("Current date is greater than reservation End time");
+
+    const diffInMsDateNow =  date1.getTime() - new Date().getTime(); // Subtract first date from  date now
+    const diffInMinutesNow = Math.floor(diffInMsDateNow / (1000 * 60)); // Convert to minutes and round down
+
+    if(diffInMinutesNow < 30) throw new NotFoundException("Choose a reservation time greater than our time now by 30 Minutes");
+
 
 
     const diffInMs = date2.getTime() - date1.getTime(); // Subtract second date from first date
@@ -96,7 +105,11 @@ export class ReservationService {
   async remove(id: string) : Promise<any> {
     this.verifValidId(id);
     const deletedReservation = await this.reservationModel.findByIdAndDelete({_id : id});
-    if(deletedReservation) return {"message" : "Reservation deleted successfully"};
+    if(deletedReservation)
+    {
+      this.equipmentService.updateEquipmentStatusToTrue(deletedReservation.Equipment);
+      return {"message" : "Reservation deleted successfully"};
+    } 
     else throw new NotFoundException("Reservation doesn't exist");
   }
 }
