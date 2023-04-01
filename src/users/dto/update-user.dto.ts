@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import {IsEmail,IsOptional,IsNumber,IsString,IsPhoneNumber } from 'class-validator'
+import {IsEmail,IsOptional,IsNumber,IsString,IsPhoneNumber, IsNumberString } from 'class-validator'
 export class UpdateUserDto{
 
     @Exclude()
@@ -43,7 +43,7 @@ export class UpdateUserDto{
     @IsOptional()
     Weight : number;
     
-    @IsNumber()
+    @IsNumberString()
     @IsOptional()
     Salary : number;
 

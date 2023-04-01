@@ -1,5 +1,5 @@
 import { Exclude } from "class-transformer";
-import { IsDecimal, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsDecimal, IsNumber, IsNumberString, IsOptional, IsString } from "class-validator";
 
 
 export class UpdateSubscriptionDto{
@@ -17,7 +17,7 @@ export class UpdateSubscriptionDto{
 
 
     @IsOptional()
-    @IsNumber()
+    @IsNumberString()
     Price : number;
 
 

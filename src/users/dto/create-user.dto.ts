@@ -1,7 +1,7 @@
 
 import {Role} from "src/Schemas/users.models"
 import { Gender } from 'src/Schemas/users.models';
-import {IsNotEmpty,IsEmail,IsOptional,IsNumber,IsDate,IsString,IsEnum,IsPhoneNumber, IsDateString } from 'class-validator'
+import {IsNotEmpty,IsEmail,IsOptional,IsNumber,IsDate,IsString,IsEnum,IsPhoneNumber, IsDateString, IsNumberString } from 'class-validator'
 import { Exclude, plainToClass } from 'class-transformer';
 export class CreateUserDto {
 
@@ -52,7 +52,7 @@ export class CreateUserDto {
     @IsOptional()
     Weight : number;
     
-    @IsNumber()
+    @IsNumberString()
     @IsOptional()
     Salary : number;
 
