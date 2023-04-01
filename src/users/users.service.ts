@@ -151,6 +151,11 @@ export class UsersService {
  }
  }
 
+ IsTrainerExist(id : string) : boolean{
+  const currrentTrainer =  this.userModel.findOne({_id: id,Role : Role.TRAINER}).exec();
+  return !isEmpty(currrentTrainer);
+}
+
  async remove(id: string) : Promise<any> {
    this.verifValidId(id);
    const deletedUser = await this.userModel.findByIdAndDelete({_id : id});

@@ -36,6 +36,10 @@ export class CreateGymDto {
     @ArrayMinSize(0)
     equipments : string[];
 
+    @IsString({ each: true })
+    @ArrayMinSize(0)
+    courses : string[];
+
     @IsNotEmpty()
     @IsString()
     OpeningTime : Date;

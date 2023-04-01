@@ -38,4 +38,9 @@ export class UpdateGymDto{
     @IsString({ each: true })
     @ArrayMinSize(0)
     equipments : string[];
+
+    @IsOptional()
+    @IsString({ each: true })
+    @ArrayMinSize(0)
+    courses : string[];
 }

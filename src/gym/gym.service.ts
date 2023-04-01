@@ -4,6 +4,7 @@ import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
 import { CreateGymConfigDto } from 'src/gym-config/dto/create-gym-config.dto';
 import { GymConfigService } from 'src/gym-config/gym-config.service';
+import { Course, CourseDocument } from 'src/Schemas/course.models';
 import { Equipment, EquipmentDocument } from 'src/Schemas/equipment.models';
 import { Gym, GymDocument } from 'src/Schemas/gym.models';
 import { Subscription, SubscriptionDocument } from 'src/Schemas/subscription.models';
@@ -20,7 +21,8 @@ export class GymService {
     @InjectModel(Person.name) private userModel : Model<UserDocument>,
     @InjectModel(Subscription.name) private subscriptionModel : Model<SubscriptionDocument>,
     @InjectModel(Equipment.name) private equipmentModel : Model<EquipmentDocument>,
-    @Inject(GymConfigService) private  gymConfigService : GymConfigService 
+    @Inject(GymConfigService) private  gymConfigService : GymConfigService,
+    @InjectModel(Course.name) private courseModel : Model<CourseDocument>,
   ){}
   
   async create(createGymDto: CreateGymDto) : Promise<any> {
@@ -47,7 +49,6 @@ export class GymService {
     if(createdGym)
     return {"message" : "gym created successfully"};
   }
-
 
 
   async verifGymExist(id : string) : Promise<gym>
@@ -82,6 +83,14 @@ export class GymService {
     await this.gymModel.updateOne({ _id: gymId }, { $push: { equipments: EquipId } });
   }
 
+  async addCourseToList(gymId : string, CourseId : string) :Promise<void>{
+    await this.gymModel.updateOne({ _id: gymId }, { $push: { courses: CourseId } });
+  }
+
+  async RemoveCourseToList(gymId : string, CourseId : string) :Promise<void>{
+    await this.gymModel.updateOne({ _id: gymId }, { $pull: { courses: CourseId } });
+  }
+
   async RemoveSubscriptionFromList(gymId: string, subId: string): Promise<void> {
     await this.gymModel.updateOne({ _id: gymId }, { $pull: { subscriptions: subId } });
   }
@@ -98,13 +107,16 @@ export class GymService {
   verifValidId(id: string){
     const isHexString = /^[0-9a-fA-F]+$/.test(id);
     if(!isHexString || id.length != 24)
-     throw new NotFoundException("invalid ID");
+     throw new NotFoundException("invalid Gym ID");
   }
 
   async findAll() : Promise<gym[]> {
     const gyms = await this.gymModel.find().exec();
-    const Allgyms : gym[] = gyms;
-    return  Allgyms;
+    let listGyms : gym[] = [] ;
+    gyms.map(gymJson => {
+      listGyms.push(new gym(gymJson));
+    });
+    return  listGyms;
   }
 
   async findOne(id: string) : Promise<gym> {
@@ -114,7 +126,7 @@ export class GymService {
     if(isEmpty(currrentGym)) throw new NotFoundException("gym doesn't exist");
 
     const Gym : gym = new gym(currrentGym);
-    return currrentGym;
+    return Gym;
   }
 
   async update(id: string, updateGymDto: UpdateGymDto) : Promise<any> {

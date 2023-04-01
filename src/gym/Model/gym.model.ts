@@ -11,6 +11,8 @@ export class gym {
     public readonly users : string[];
     public readonly subscriptions : string[];
     public readonly equipments : string[];
+    public readonly courses : string[];
+
 
     constructor(GymData : any)
     {
@@ -23,6 +25,7 @@ export class gym {
         this.users = GymData.users;
         this.subscriptions = GymData.subscriptions;
         this.equipments = GymData.equipments;
+        this.courses = GymData.Courses;
     }
 
 }

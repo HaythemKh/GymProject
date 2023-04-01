@@ -17,7 +17,6 @@ export class Equipment {
 
     @Prop({ required:true})
     Gym : string;
-
 }
 
 export const EquipmentSchema = SchemaFactory.createForClass(Equipment)
