@@ -22,7 +22,7 @@ export class UpdateSubscriptionDto{
 
 
     @IsOptional()
-    @IsNumber()
+    @IsNumberString()
     Duration : number;
 
     @Exclude()

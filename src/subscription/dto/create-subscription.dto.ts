@@ -21,7 +21,7 @@ export class CreateSubscriptionDto {
 
 
     @IsNotEmpty()
-    @IsNumber()
+    @IsNumberString()
     Duration : number;
 
     @IsNotEmpty()
