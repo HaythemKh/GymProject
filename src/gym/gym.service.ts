@@ -156,6 +156,10 @@ export class GymService {
     await this.equipmentModel.deleteMany({ _id: { $in: EquipIDs } });
   }
 
+  async deleteAllCoursesById(CourseIDs: string[]): Promise<void> {
+    await this.courseModel.deleteMany({ _id: { $in: CourseIDs } });
+  }
+
   async remove(id: string) : Promise<any> {
     this.verifValidId(id);
     const deletedGym = await this.gymModel.findByIdAndDelete({_id : id});
@@ -164,6 +168,7 @@ export class GymService {
       await this.deleteAllSubscriptionsById(deletedGym.subscriptions);
       await this.gymConfigService.remove(deletedGym.gymConfig);
       await this.deleteAllEquipmentsById(deletedGym.equipments);
+      await this.deleteAllCoursesById(deletedGym.courses);
       return {"message" : "gym deleted successfully"};
     } 
     else throw new NotFoundException("gym doesn't exist");

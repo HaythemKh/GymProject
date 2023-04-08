@@ -20,6 +20,10 @@ export class CreateEquipmentDto {
 
     @IsNotEmpty()
     @IsString()
+    Image : string;
+
+    @IsNotEmpty()
+    @IsString()
     Gym : string;
 
 }

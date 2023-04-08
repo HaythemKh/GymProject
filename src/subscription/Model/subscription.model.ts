@@ -3,8 +3,8 @@ export class subscription {
     public readonly _id : string;
     public readonly Name : string;
     public readonly Description : string;
-    public readonly Price : string;
-    public readonly Duration : string;
+    public readonly Price : number;
+    public readonly Duration : number;
     public readonly Gym : string;
 
     constructor(subscriptionData : any)

@@ -21,4 +21,8 @@ export class UpdateEquipmentDto {
     @IsBoolean()
     Availability : boolean;
 
+    @IsOptional()
+    @IsString()
+    Image : string;
+
 }

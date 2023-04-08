@@ -16,6 +16,9 @@ export class Equipment {
     Availability : boolean;
 
     @Prop({ required:true})
+    Image : string;
+
+    @Prop({ required:true})
     Gym : string;
 }
 

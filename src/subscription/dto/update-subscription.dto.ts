@@ -17,12 +17,12 @@ export class UpdateSubscriptionDto{
 
 
     @IsOptional()
-    @IsNumberString()
+    @IsNumber()
     Price : number;
 
 
     @IsOptional()
-    @IsNumberString()
+    @IsNumber()
     Duration : number;
 
     @Exclude()

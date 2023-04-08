@@ -1,5 +1,6 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
 import { GymService } from 'src/gym/gym.service';
 import { Course, CourseDocument } from 'src/Schemas/course.models';
@@ -65,15 +66,26 @@ export class CourseService {
     return  listCourses;
   }
 
-  // async findOne(id: string) :Promise<course> {
-  //   return await `This action returns a #${id} course`;
-  // }
+  async findOne(id: string) :Promise<course> {
+
+    this.verifValidId(id);
+    const currrentCourse = await this.CourseModel.findOne({_id: id}).exec();
+    if(isEmpty(currrentCourse)) throw new NotFoundException("equipment doesn't exist");
+    const Course : course = new course(currrentCourse);
+    return Course;
+  }
 
   async update(id: string, updateCourseDto: UpdateCourseDto) {
     return await `This action updates a #${id} course`;
   }
 
   async remove(id: string) : Promise<any> {
-    return await `This action removes a #${id} course`;
+    this.verifValidId(id);
+    const deletedCourse = await this.CourseModel.findByIdAndDelete({_id : id});
+    if(deletedCourse){ 
+      await this.gymService.RemoveEquipmentFromList(deletedCourse.Gym,deletedCourse._id);
+      return true;
+    } 
+    else throw new NotFoundException("Course doesn't exist");
   }
 }
