@@ -54,7 +54,7 @@ export class Person {
     @Prop({ required:true})
     Gym : string;
 
-    @Prop({ required: true, enum: Role, default: Role.MEMBER })
+    @Prop({ required: true, enum: Role})
     Role: Role;
 
     

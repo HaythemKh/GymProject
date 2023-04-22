@@ -56,8 +56,8 @@ export class CreateUserDto {
     @IsOptional()
     Salary : number;
 
+    @IsOptional()
     @IsString()
-    @IsNotEmpty()
     Gym : string;
 
     @IsEnum(Role)

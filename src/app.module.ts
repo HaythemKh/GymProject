@@ -8,6 +8,7 @@ import { GymConfigModule } from './gym-config/gym-config.module';
 import { EquipmentModule } from './equipment/equipment.module';
 import { ReservationModule } from './reservation/reservation.module';
 import { CourseModule } from './course/course.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { CourseModule } from './course/course.module';
     GymConfigModule,
     EquipmentModule,
     ReservationModule,
-    CourseModule
+    CourseModule,
+    AuthModule
   ],
   controllers: [],
   providers: [],

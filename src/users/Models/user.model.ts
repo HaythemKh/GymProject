@@ -16,7 +16,7 @@ export class User {
     public readonly Address : string;
     public readonly Phone : string;
     public  Role : Role;
-    public  Gym : String;
+    public readonly  Gym : string;
 
 
     constructor(userData : any)

@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
@@ -10,6 +10,7 @@ import { admin } from './Models/admin.model';
 import { member } from './Models/member.model';
 import { trainer } from './Models/trainer.model';
 import { User } from './Models/user.model';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -19,27 +20,35 @@ export class UsersService {
     @Inject(GymService) private  gymService : GymService 
     ){}
  
+  
+    
+  async create(CurrentUser: CreateUserDto,req : any) : Promise<any> {
 
-  async create(CurrentUser: CreateUserDto) : Promise<any> {
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
     let current : User = null;
 
+    CurrentUser.Gym = req.user.gym;
+    const hashedPassword = await bcrypt.hash(CurrentUser.Password,10);
+    CurrentUser.Password = hashedPassword;
     if (CurrentUser.Role === Role.ADMIN)  current = new admin(CurrentUser);
     else if(CurrentUser.Role === Role.MEMBER) current = new member(CurrentUser);
     else if(CurrentUser.Role === Role.TRAINER)  current = new trainer(CurrentUser);
 
-    const userEmail = await this.userModel.findOne({Email : CurrentUser.Email});
-    const userPhone = await this.userModel.findOne({Phone : CurrentUser.Phone});
-    this.verifValidId(CurrentUser.Gym);
+
+    const userEmail = await this.userModel.findOne({Email : current.Email});
+    const userPhone = await this.userModel.findOne({Phone : current.Phone});
+    this.verifValidId(req.user.gym);
     if (!isEmpty(userEmail)) throw new NotFoundException("Email Exist");
     else
     if (!isEmpty(userPhone)) throw new NotFoundException("phone number exist");
     else
     {
-      const gymExist = await this.gymService.verifGymExist(CurrentUser.Gym);
+      const gymExist = await this.gymService.verifGymExist(req.user.gym);
       if(isEmpty(gymExist))throw new NotFoundException("this gym doesn't exist");
       else
       {
-          const CreatedUser = await this.userModel.create(CurrentUser);
+          const CreatedUser = await this.userModel.create(current);
           const IdUser = CreatedUser._id;
           if(CreatedUser)
           {
@@ -51,8 +60,15 @@ export class UsersService {
     }
   }
 
-  async findAllUsers() : Promise<User[]> {
-    const AllUsers = await this.userModel.find().exec();
+  async PersonalInformation () : Promise<any>{
+    return await "dfsdfsdfd";
+  }
+
+  async findAllUsers(req : any) : Promise<User[]> {
+
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
+    const AllUsers = await this.userModel.find({Gym : req.user.gym}).exec();
     let listUsers : User[] = [] ;
     let user : User;
     AllUsers.map(userJson => {
@@ -64,8 +80,9 @@ export class UsersService {
      return listUsers;
  }
 
- async findAllAdmins() : Promise<admin[]> {
-   const AllAdmins = await this.userModel.find({ Role: Role.ADMIN }).exec();
+ async findAllAdmins(req : any) : Promise<admin[]> {
+  if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+   const AllAdmins = await this.userModel.find({ Role: Role.ADMIN,Gym :req.user.gym }).exec();
    let listAdmins : admin[] = [] ;
    AllAdmins.map(userJson => {
      listAdmins.push(new admin(userJson));
@@ -73,8 +90,9 @@ export class UsersService {
     return listAdmins;
  }
 
- async findAllMembers() : Promise<member[]> {
-   const AllMembers = await this.userModel.find({ Role: Role.MEMBER }).exec();
+ async findAllMembers(req : any) : Promise<member[]> {
+  if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+   const AllMembers = await this.userModel.find({ Role: Role.MEMBER,Gym :req.user.gym }).exec();
    let listMembers : member[] = [] ;
    AllMembers.map(userJson => {
      listMembers.push(new member(userJson));
@@ -82,8 +100,9 @@ export class UsersService {
     return listMembers;
  }
 
- async findAllTrainers() : Promise<trainer[]> {
-   const AllTrainers = await this.userModel.find({ Role: Role.TRAINER }).exec();
+ async findAllTrainers(req : any) : Promise<trainer[]> {
+  if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+   const AllTrainers = await this.userModel.find({ Role: Role.TRAINER,Gym :req.user.gym }).exec();
    let listTrainers : trainer[] = [] ;
    AllTrainers.map(userJson => {
      listTrainers.push(new trainer(userJson));
@@ -97,11 +116,10 @@ export class UsersService {
 
  
 
- async findOne(id: string) : Promise<User> {
+ async findOne(id: string,req : any) : Promise<User> {
 
    this.verifValidId(id);
-
-   const currrentUser = await this.userModel.findOne({_id: id}).exec();
+   const currrentUser = await this.userModel.findOne({_id: id, Gym : req.user.gym}).exec();
    if(isEmpty(currrentUser)) throw new NotFoundException("user doesn't exist");
    else
    {
@@ -121,34 +139,23 @@ export class UsersService {
     throw new NotFoundException("invalid User ID");
  }
 
- async update(id: string, updateUserDto: UpdateUserDto) : Promise<any> {
+ async update(id: string, updateUserDto: UpdateUserDto, req : any) : Promise<any> {
 
-   let currrentUser : User = null;
+  if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
    this.verifValidId(id);
-   const foundDocument = await this.userModel.findOne({ _id: id }).exec();
+   const foundDocument = await this.userModel.findOne({ _id: id,Gym : req.user.gym }).exec();
    if(isEmpty(foundDocument)) throw new NotFoundException("user doesn't exist");
    else
    {
-   const myRole = foundDocument["Role"];
-
-   (foundDocument["Role"] === "admin")   ?  currrentUser = new admin(updateUserDto):
-   (foundDocument["Role"] === "member")  ?  currrentUser = new member(updateUserDto):
-   (foundDocument["Role"] === "trainer") ?  currrentUser = new trainer(updateUserDto):null;
-   
-   currrentUser.Role = myRole;
    const updatedUser = await this.userModel.findByIdAndUpdate(
      {_id : id},
-     {$set: currrentUser},
+     {$set: updateUserDto},
      {new: true},
    )
-   let updated : User;
-   if(currrentUser.Role == Role.ADMIN) updated = new admin(updatedUser);else
-   if(currrentUser.Role == Role.TRAINER) updated = new trainer(updatedUser);else
-   if(currrentUser.Role == Role.MEMBER) updated = new member(updatedUser);
-
    if(!isEmpty(updatedUser)) return {"message" : "user updated successfully"};
    else throw new NotFoundException("updating user denied");
- }
+  }
  }
 
  IsTrainerExist(id : string) : boolean{
@@ -156,13 +163,20 @@ export class UsersService {
   return !isEmpty(currrentTrainer);
 }
 
- async remove(id: string) : Promise<any> {
+ async remove(id: string,req : any) : Promise<any> {
+  if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
    this.verifValidId(id);
-   const deletedUser = await this.userModel.findByIdAndDelete({_id : id});
+   const deletedUser = await this.userModel.findByIdAndDelete({_id : id,Gym : req.user.gym});
    if(deletedUser){  
      await this.gymService.RemoveUserFromList(deletedUser.Gym,deletedUser._id);
      return {"message" : "user deleted successfully"};
    } 
    else throw new NotFoundException("user doesn't exist");
  }
+
+
+
+
+
 }
