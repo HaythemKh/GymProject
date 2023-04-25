@@ -1,9 +1,10 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
 import { GymService } from 'src/gym/gym.service';
 import { Subscription, SubscriptionDocument } from 'src/Schemas/subscription.models';
+import { Role } from 'src/Schemas/users.models';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { subscription } from './Model/subscription.model';
@@ -16,9 +17,10 @@ export class SubscriptionService {
     @Inject(GymService) private  gymService : GymService
   ){}
 
-  async create(createSubscriptionDto: CreateSubscriptionDto) : Promise<any> {
+  async create(createSubscriptionDto: CreateSubscriptionDto,req :any) : Promise<any> {
     
-    this.verifValidId(createSubscriptionDto.Gym);
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+    createSubscriptionDto.Gym = req.user.gym;
     const findSubscription = await this.subscriptionModel.findOne({Name : createSubscriptionDto.Name,Gym :createSubscriptionDto.Gym }).exec();
     if(findSubscription) throw new NotFoundException("This name of subscription  exist in this gym");
 
@@ -31,9 +33,11 @@ export class SubscriptionService {
      return {"message" : "susbscription added successfully"};
   }
 
-  async findAllSubscriptions() : Promise<subscription[]> {
+  async findAllSubscriptions(req : any) : Promise<subscription[]> {
 
-    const AllSubscription = await this.subscriptionModel.find().exec();
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
+    const AllSubscription = await this.subscriptionModel.find({Gym : req.user.gym}).exec();
     let listSubscriptions : subscription[] = [] ;
     AllSubscription.map(subscriptionJson => {
       listSubscriptions.push(new subscription(subscriptionJson));
@@ -59,9 +63,11 @@ export class SubscriptionService {
     return Subscription;
   }
 
-  async update(id: string, updateSubscriptionDto: UpdateSubscriptionDto) : Promise<any> {
+  async update(id: string, updateSubscriptionDto: UpdateSubscriptionDto,req : any) : Promise<any> {
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
     this.verifValidId(id);
-    const foundDocument = await this.subscriptionModel.findOne({ _id: id }).exec();
+    const foundDocument = await this.subscriptionModel.findOne({ _id: id,Gym : req.user.gym }).exec();
 
     if(isEmpty(foundDocument)) throw new NotFoundException("subscription doesn't exist");
 
@@ -76,7 +82,9 @@ export class SubscriptionService {
     else throw new NotFoundException("updating subscription denied");
   }
 
-  async remove(id: string) : Promise<any> {
+  async remove(id: string,req) : Promise<any> {
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
     this.verifValidId(id);
     const deletedSubs = await this.subscriptionModel.findByIdAndDelete({_id : id});
     if(deletedSubs){ 

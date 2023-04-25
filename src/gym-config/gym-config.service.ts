@@ -1,8 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
+import { Gym, GymDocument } from 'src/Schemas/gym.models';
 import { GymConfig, GymConfigDocument } from 'src/Schemas/gymConfig.models';
+import { Role } from 'src/Schemas/users.models';
 import { CreateGymConfigDto } from './dto/create-gym-config.dto';
 import { UpdateGymConfigDto } from './dto/update-gym-config.dto';
 import { gymConfig } from './Model/gymConfig.model';
@@ -11,7 +13,8 @@ import { gymConfig } from './Model/gymConfig.model';
 export class GymConfigService {
 
   constructor(
-    @InjectModel(GymConfig.name) private gymConfigModel : Model<GymConfigDocument>
+    @InjectModel(GymConfig.name) private gymConfigModel : Model<GymConfigDocument>,
+    @InjectModel(Gym.name) private gymModel : Model<GymDocument>
     ){}
 
     async create(createGymConfigDto: CreateGymConfigDto) : Promise<any> {
@@ -23,7 +26,6 @@ export class GymConfigService {
       if(!created)  throw new NotFoundException ("problem in creation of the gym");
 
       return created._id;
-
     }
   
     verifValidId(id: string){
@@ -32,18 +34,23 @@ export class GymConfigService {
        throw new NotFoundException("invalid GymConfig ID");
     }
   
-    async findOne(id: string) : Promise<gymConfig> {
-      this.verifValidId(id);
-      const currrentConfig = await this.gymConfigModel.findOne({_id: id}).exec();
+    async findOne(req: any) : Promise<gymConfig> {
+
+      if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+      const gym = await this.gymModel.findOne({_id : req.user.gym});
+      const currrentConfig = await this.gymConfigModel.findOne({_id: gym.gymConfig}).exec();
       if(!currrentConfig) throw new NotFoundException("this GymConfig doesn't exist");
   
       const Config : gymConfig = new gymConfig(currrentConfig);
       return  Config;
     }
   
-    async update(id: string, updateGymConfigDto: UpdateGymConfigDto) : Promise<any> {
-      this.verifValidId(id);
-      const foundDocument = await this.gymConfigModel.findOne({ _id: id}).exec();
+    async update(req: any, updateGymConfigDto: UpdateGymConfigDto) : Promise<any> {
+
+      if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+      const gym = await this.gymModel.findOne({_id : req.user.gym});
+
+      const foundDocument = await this.gymConfigModel.findOne({ _id: gym.gymConfig}).exec();
       if(isEmpty(foundDocument)) throw new NotFoundException("gymConfig doesn't exist");
 
       if(updateGymConfigDto.OpeningTime !== undefined)
@@ -53,11 +60,9 @@ export class GymConfigService {
       if((updateGymConfigDto.ClosingTime) !== undefined)
       updateGymConfigDto.ClosingTime = new Date(Date.parse(`01/01/2000 ${updateGymConfigDto.ClosingTime}`));
       
-      const currentgymConfig : gymConfig = new gymConfig(updateGymConfigDto);
-
       const updatedGym = await this.gymConfigModel.findByIdAndUpdate(
-        {_id : id},
-        {$set: currentgymConfig},
+        {_id : gym.gymConfig},
+        {$set: updateGymConfigDto},
         {new: true},
       )
       if(!isEmpty(updatedGym)) return {"message" : "gymConfig updated successfully"};

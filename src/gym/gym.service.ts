@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
@@ -8,7 +8,7 @@ import { Course, CourseDocument } from 'src/Schemas/course.models';
 import { Equipment, EquipmentDocument } from 'src/Schemas/equipment.models';
 import { Gym, GymDocument } from 'src/Schemas/gym.models';
 import { Subscription, SubscriptionDocument } from 'src/Schemas/subscription.models';
-import { Person, UserDocument } from 'src/Schemas/users.models';
+import { Person, Role, UserDocument } from 'src/Schemas/users.models';
 import { CreateGymDto } from './dto/create-gym.dto';
 import { UpdateGymDto } from './dto/update-gym.dto';
 import { gym } from './Model/gym.model';
@@ -25,7 +25,7 @@ export class GymService {
     @InjectModel(Course.name) private courseModel : Model<CourseDocument>,
   ){}
   
-  async create(createGymDto: CreateGymDto) : Promise<any> {
+  async create(createGymDto: CreateGymDto, req :any) : Promise<any> {
     
     let {OpeningTime,ClosingTime,Logo,Color} = createGymDto;
     let myOpeneningtime = OpeningTime;OpeningTime = new Date(Date.parse(`01/01/2000 ${myOpeneningtime}`));
@@ -41,7 +41,6 @@ export class GymService {
     
     const ConfigId = await this.gymConfigService.create(createConfig);
     createGymDto.gymConfig = ConfigId;
-
     const newGym = new gym(createGymDto);
 
     
@@ -110,7 +109,8 @@ export class GymService {
      throw new NotFoundException("invalid Gym ID");
   }
 
-  async findAll() : Promise<gym[]> {
+  async findAll(req : any) : Promise<gym[]> {
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
     const gyms = await this.gymModel.find().exec();
     let listGyms : gym[] = [] ;
     gyms.map(gymJson => {
@@ -119,24 +119,23 @@ export class GymService {
     return  listGyms;
   }
 
-  async findOne(id: string) : Promise<gym> {
-    this.verifValidId(id);
+  async findOne(req: any) : Promise<gym> {
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
 
-    const currrentGym = await this.gymModel.findOne({_id: id}).exec();
+    const currrentGym = await this.gymModel.findOne({_id: req.user.gym}).exec();
     if(isEmpty(currrentGym)) throw new NotFoundException("gym doesn't exist");
 
     const Gym : gym = new gym(currrentGym);
     return Gym;
   }
 
-  async update(id: string, updateGymDto: UpdateGymDto) : Promise<any> {
+  async update(req: any, updateGymDto: UpdateGymDto) : Promise<any> {
 
-    this.verifValidId(id);
-    const foundDocument = await this.gymModel.findOne({ _id: id}).exec();
+    const foundDocument = await this.gymModel.findOne({ _id: req.user.gym}).exec();
     if(isEmpty(foundDocument)) throw new NotFoundException("gym doesn't exist");
     const currentgym : gym = new gym(updateGymDto);
     const updatedGym = await this.gymModel.findByIdAndUpdate(
-      {_id : id},
+      {_id : req.user.gym},
       {$set: currentgym},
       {new: true},
     )
