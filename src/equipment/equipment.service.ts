@@ -1,9 +1,10 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
 import { GymService } from 'src/gym/gym.service';
 import { EquipmentSchema,EquipmentDocument,Equipment } from 'src/Schemas/equipment.models';
+import { Role } from 'src/Schemas/users.models';
 import { CreateEquipmentDto } from './dto/create-equipment.dto';
 import { UpdateEquipmentDto } from './dto/update-equipment.dto';
 import { EquipmentModule } from './equipment.module';
@@ -19,7 +20,10 @@ export class EquipmentService {
     @Inject(GymService) private  gymService : GymService
   ){}
   
-  async create(createEquipmentDto: CreateEquipmentDto) {
+  async create(createEquipmentDto: CreateEquipmentDto,req:any) {
+
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+    createEquipmentDto.Gym = req.user.gym;
     this.verifValidId(createEquipmentDto.Gym);
     if(!(await this.gymService.verifGymExistID(createEquipmentDto.Gym))) throw new NotFoundException("This gym doesn't exist ");
 
@@ -42,8 +46,11 @@ export class EquipmentService {
 
   }
 
-  async findAll() : Promise<equipment[]> {
-    const AllEquipments = await this.EquipmentModel.find().exec();
+  async findAll(req : any) : Promise<equipment[]> {
+
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
+    const AllEquipments = await this.EquipmentModel.find({Gym : req.user.gym}).exec();
     let listEquipments : equipment[] = [] ;
     AllEquipments.map(EquipmentJson => {
       listEquipments.push(new equipment(EquipmentJson));
@@ -60,11 +67,14 @@ export class EquipmentService {
     return Equipment;
   }
 
-   async update(id: string, updateEquipmentDto: UpdateEquipmentDto) : Promise<any> {
-    this.verifValidId(id);
-    const foundDocument = await this.EquipmentModel.findOne({ _id: id }).exec();
+   async update(id: string, updateEquipmentDto: UpdateEquipmentDto,req : any) : Promise<any> {
 
-    if(isEmpty(foundDocument)) throw new NotFoundException("subscription doesn't exist");
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
+    this.verifValidId(id);
+    const foundDocument = await this.EquipmentModel.findOne({ _id: id,Gym : req.user.gym }).exec();
+
+    if(isEmpty(foundDocument)) throw new NotFoundException("equipment doesn't exist");
 
     const Equipment : equipment = new equipment(updateEquipmentDto);
     const updatedEquip = await this.EquipmentModel.findByIdAndUpdate(
@@ -97,7 +107,10 @@ export class EquipmentService {
     );
   }
 
-   async remove(id: string) : Promise<any> {
+   async remove(id: string,req : any) : Promise<any> {
+
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
     this.verifValidId(id);
     const deletedEquip = await this.EquipmentModel.findByIdAndDelete({_id : id});
     if(deletedEquip){ 

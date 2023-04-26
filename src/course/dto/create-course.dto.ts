@@ -21,15 +21,15 @@ export class CreateCourseDto {
     @IsNumber()
     Capacity : number;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     Gym : string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsDateString()
     StartDate : string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsDateString()
     EndDate : string;
 }

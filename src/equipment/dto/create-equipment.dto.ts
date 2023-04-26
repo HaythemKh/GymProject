@@ -22,7 +22,7 @@ export class CreateEquipmentDto {
     @IsString()
     Image : string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     Gym : string;
 

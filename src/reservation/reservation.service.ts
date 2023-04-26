@@ -1,9 +1,11 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
 import { EquipmentService } from 'src/equipment/equipment.service';
+import { GymService } from 'src/gym/gym.service';
 import { Reservation, ReservationDocument } from 'src/Schemas/reservation.models';
+import { Role } from 'src/Schemas/users.models';
 import { UsersService } from 'src/users/users.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
@@ -15,10 +17,14 @@ export class ReservationService {
   constructor(
     @InjectModel(Reservation.name) private reservationModel : Model<ReservationDocument>,
     @Inject(EquipmentService) private  equipmentService : EquipmentService,
-    @Inject(UsersService) private  usersService : UsersService
+    @Inject(UsersService) private  usersService : UsersService,
+    @Inject(GymService) private  gymService : GymService
   ){}
 
-  async create(createReservationDto: CreateReservationDto) : Promise<any> {
+  async create(createReservationDto: CreateReservationDto, req : any) : Promise<any> {
+
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
     this.validateReservation(createReservationDto);
 
     const verifexist = await this.reservationModel.findOne({Equipment :createReservationDto.Equipment ,Start_time :createReservationDto.Start_time,End_time : createReservationDto.End_time });
@@ -31,7 +37,7 @@ export class ReservationService {
     const created = await this.reservationModel.create(reserve);
     if(!created) throw new NotFoundException("problem with reservation");
 
-    this.equipmentService.updateEquipmentStatusToFalse(created.Equipment);
+    // this.equipmentService.updateEquipmentStatusToFalse(created.Equipment);
     return {"message" : "Reservation added successfully"};
 
   }
@@ -80,8 +86,12 @@ export class ReservationService {
     if(!isHexString || id.length != 24)
      throw new NotFoundException("invalid Reservation ID");
   }
-  async findAll() : Promise<reservation[]> {
-    const AllReservations = await this.reservationModel.find().exec();
+  async findAll(req : any) : Promise<reservation[]> {
+
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
+    const UserList = await this.gymService.getUserListByGym(req.user.gym);
+    const AllReservations = await this.reservationModel.find({User : {$in : UserList}}).exec();
     let listReservations : reservation[] = [] ;
     AllReservations.map(ReservationJson => {
       listReservations.push(new reservation(ReservationJson));
@@ -98,16 +108,22 @@ export class ReservationService {
     return  Reservation;
   }
 
-  update(id: number, updateReservationDto: UpdateReservationDto) {
+  async update(id: string, updateReservationDto: UpdateReservationDto,req : any) {
+
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
     return `This action updates a #${id} reservation`;
   }
 
-  async remove(id: string) : Promise<any> {
+  async remove(id: string,req : any) : Promise<any> {
+
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
     this.verifValidId(id);
     const deletedReservation = await this.reservationModel.findByIdAndDelete({_id : id});
     if(deletedReservation)
     {
-      this.equipmentService.updateEquipmentStatusToTrue(deletedReservation.Equipment);
+      // this.equipmentService.updateEquipmentStatusToTrue(deletedReservation.Equipment);
       return {"message" : "Reservation deleted successfully"};
     } 
     else throw new NotFoundException("Reservation doesn't exist");

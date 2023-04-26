@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards,Request } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
@@ -8,14 +9,15 @@ import { course } from './Model/course.model';
 export class CourseController {
   constructor(private readonly courseService: CourseService) {}
 
+  @UseGuards(AuthGuard("jwt"))
   @Post("CreateCourse")
-  async create(@Body() createCourseDto: CreateCourseDto) : Promise<any> {
-    return await this.courseService.create(createCourseDto);
+  async create(@Body() createCourseDto: CreateCourseDto,@Request() req:any) : Promise<any> {
+    return await this.courseService.create(createCourseDto,req);
   }
-
+  @UseGuards(AuthGuard("jwt"))
   @Get("AllCourses")
-  async findAll() : Promise<course[]> {
-    return await this.courseService.findAll();
+  async findAll(@Request() req : any) : Promise<course[]> {
+    return await this.courseService.findAll(req);
   }
 
   // @Get(':id')
@@ -27,9 +29,9 @@ export class CourseController {
   async update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) :Promise<any> {
     return await this.courseService.update(id, updateCourseDto);
   }
-
+  @UseGuards(AuthGuard("jwt"))
   @Delete(':id')
-  async remove(@Param('id') id: string) :Promise<any> {
-    return await this.courseService.remove(id);
+  async remove(@Param('id') id: string,@Request() req:any) :Promise<any> {
+    return await this.courseService.remove(id,req);
   }
 }

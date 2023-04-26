@@ -86,7 +86,7 @@ export class GymService {
     await this.gymModel.updateOne({ _id: gymId }, { $push: { courses: CourseId } });
   }
 
-  async RemoveCourseToList(gymId : string, CourseId : string) :Promise<void>{
+  async RemoveCourseFromList(gymId : string, CourseId : string) :Promise<void>{
     await this.gymModel.updateOne({ _id: gymId }, { $pull: { courses: CourseId } });
   }
 
@@ -131,6 +131,8 @@ export class GymService {
 
   async update(req: any, updateGymDto: UpdateGymDto) : Promise<any> {
 
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
     const foundDocument = await this.gymModel.findOne({ _id: req.user.gym}).exec();
     if(isEmpty(foundDocument)) throw new NotFoundException("gym doesn't exist");
     const currentgym : gym = new gym(updateGymDto);
@@ -171,5 +173,11 @@ export class GymService {
       return {"message" : "gym deleted successfully"};
     } 
     else throw new NotFoundException("gym doesn't exist");
+  }
+
+  async getUserListByGym(gym : string) : Promise<string[]>{
+    const currrentGym = await this.gymModel.findOne({_id: gym}).exec();
+    const myList = currrentGym.users;
+    return myList;
   }
 }

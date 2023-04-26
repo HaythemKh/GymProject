@@ -5,12 +5,14 @@ import { Reservation, ReservationSchema } from 'src/Schemas/reservation.models';
 import { MongooseModule } from '@nestjs/mongoose';
 import { EquipmentModule } from 'src/equipment/equipment.module';
 import { UsersModule } from 'src/users/users.module';
+import { GymModule } from 'src/gym/gym.module';
 
 @Module({
   imports : [
     MongooseModule.forFeature([{name : Reservation.name, schema:ReservationSchema}]),
     EquipmentModule,
-    UsersModule
+    UsersModule,
+    GymModule
   ],
   controllers: [ReservationController],
   providers: [ReservationService],

@@ -1,9 +1,10 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
 import { GymService } from 'src/gym/gym.service';
 import { Course, CourseDocument } from 'src/Schemas/course.models';
+import { Role } from 'src/Schemas/users.models';
 import { UsersModule } from 'src/users/users.module';
 import { UsersService } from 'src/users/users.service';
 import { CreateCourseDto } from './dto/create-course.dto';
@@ -20,8 +21,12 @@ export class CourseService {
   ){}
 
 
-  async create(createCourseDto: CreateCourseDto) : Promise<any> {
+  async create(createCourseDto: CreateCourseDto,req : any) : Promise<any> {
+
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
     await this.validationCourseTime(createCourseDto);
+    createCourseDto.Gym = req.user.gym;
     let Course : course = new course(createCourseDto);
     const start = new Date(createCourseDto.StartDate);
     const end = new Date(createCourseDto.EndDate);
@@ -56,11 +61,13 @@ export class CourseService {
     if(!isHexString || id.length != 24)
      throw new NotFoundException("invalid Equipment ID");
   }
-  async findAll() : Promise<course[]> {
+  async findAll(req : any) : Promise<course[]> {
+    
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
 
-    const AllCourses = await this.CourseModel.find().exec();
+    const AllCourses = await this.CourseModel.find({Gym : req.user.gym}).exec();
     let listCourses : course[] = [] ;
-    AllCourses.map(CourseJson => {
+    AllCourses.map(CourseJson => {  
       listCourses.push(new course(CourseJson));
     });
     return  listCourses;
@@ -70,7 +77,7 @@ export class CourseService {
 
     this.verifValidId(id);
     const currrentCourse = await this.CourseModel.findOne({_id: id}).exec();
-    if(isEmpty(currrentCourse)) throw new NotFoundException("equipment doesn't exist");
+    if(isEmpty(currrentCourse)) throw new NotFoundException("Course doesn't exist");
     const Course : course = new course(currrentCourse);
     return Course;
   }
@@ -79,11 +86,14 @@ export class CourseService {
     return await `This action updates a #${id} course`;
   }
 
-  async remove(id: string) : Promise<any> {
+  async remove(id: string,req : any) : Promise<any> {
+
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
     this.verifValidId(id);
     const deletedCourse = await this.CourseModel.findByIdAndDelete({_id : id});
     if(deletedCourse){ 
-      await this.gymService.RemoveEquipmentFromList(deletedCourse.Gym,deletedCourse._id);
+      await this.gymService.RemoveCourseFromList(deletedCourse.Gym,deletedCourse._id);
       return true;
     } 
     else throw new NotFoundException("Course doesn't exist");
