@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
@@ -147,6 +147,7 @@ export class UsersService {
    if(isEmpty(foundDocument)) throw new NotFoundException("user doesn't exist");
    else
    {
+    if((updateUserDto.Password).length < 6) throw new  BadRequestException("the length of password should be greater or equal to 6");
     const hashedPassword = await bcrypt.hash(updateUserDto.Password,10);
     updateUserDto.Password = hashedPassword;
    const updatedUser = await this.userModel.findByIdAndUpdate(
