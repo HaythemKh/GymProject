@@ -20,10 +20,11 @@ export class SubscriptionController {
     return await this.subscriptionService.findAllSubscriptions(req);
   }
 
-  // @Get(':id')
-  // async findOne(@Param('id') id: string) : Promise<any> {
-  //   return await this.subscriptionService.findOne(id);
-  // }
+  @UseGuards(AuthGuard("jwt"))
+  @Get(':id')
+  async findOne(@Param('id') id: string,@Request() req : any) : Promise<any> {
+    return await this.subscriptionService.findOne(id,req);
+  }
 
   @UseGuards(AuthGuard("jwt"))
   @Patch(':id')

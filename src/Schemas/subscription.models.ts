@@ -1,5 +1,5 @@
 import {Prop,Schema,SchemaFactory}  from '@nestjs/mongoose';
-import {Document}  from 'mongoose';
+import mongoose, {Document}  from 'mongoose';
 
 export type SubscriptionDocument = Subscription & Document;
 
@@ -13,12 +13,9 @@ export class Subscription {
     Description : string;
 
     @Prop({ required:true})
-    Price : number;
+    PricePerMonth : number;
 
-    @Prop({ required:true})
-    Duration : number;
-
-    @Prop({ required:true})
+    @Prop({ required:true,type: mongoose.Schema.Types.ObjectId, ref: 'gym'})
     Gym : string;
 }
 

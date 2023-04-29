@@ -33,7 +33,7 @@ export class ReservationService {
     reserve.setStartDate(createReservationDto.Start_time)
     reserve.setEndDate(createReservationDto.End_time)
     
-    if(! await this.equipmentService.isAvailable(reserve.Equipment)) throw new NotFoundException("this equipment is not available because she is reserved by another user");
+    if(! await this.equipmentService.isAvailable(createReservationDto.Equipment)) throw new NotFoundException("this equipment is not available because she is reserved by another user");
     const created = await this.reservationModel.create(reserve);
     if(!created) throw new NotFoundException("problem with reservation");
 
@@ -100,7 +100,10 @@ export class ReservationService {
     return  listReservations;
   }
 
-  async findOne(id: string) : Promise<reservation> {
+  async findOne(id: string,req : any) : Promise<reservation> {
+
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
     this.verifValidId(id);
     const ReservationModel = await this.reservationModel.findOne({_id : id}).exec();
     if(isEmpty(ReservationModel)) throw new NotFoundException("Reservation doesn't exist");

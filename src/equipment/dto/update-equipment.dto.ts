@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import {IsNotEmpty,IsEmail,IsOptional,IsNumber,IsDate,IsString,ArrayMinSize,IsPhoneNumber, IsBoolean} from 'class-validator'
+import {IsNotEmpty,IsEmail,IsOptional,IsNumber,IsDate,IsString,ArrayMinSize,IsPhoneNumber, IsBooleanString} from 'class-validator'
 
 export class UpdateEquipmentDto {
 
@@ -18,7 +18,7 @@ export class UpdateEquipmentDto {
     Description : string;
 
     @IsOptional()
-    @IsBoolean()
+    @IsBooleanString()
     Availability : boolean;
 
     @IsOptional()

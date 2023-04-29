@@ -1,10 +1,10 @@
 export class gymConfig{
 
-    public readonly _id : string;
-    public readonly OpeningTime : Date;
-    public readonly ClosingTime : Date;
-    public readonly Logo : string;
-    public readonly Color : string;
+    private  _id : string;
+    private  OpeningTime : Date;
+    private  ClosingTime : Date;
+    private  Logo : string;
+    private  Color : string;
 
     constructor(configData : any)
     {

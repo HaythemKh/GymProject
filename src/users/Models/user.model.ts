@@ -6,17 +6,19 @@ import { Model } from 'mongoose';
 
 export class User {
     
-    public  _id : string;
-    public readonly firstName : string;
-    public readonly lastName : string;
-    public readonly Email : string;
-    public readonly Password : string;
-    public readonly Gender : Gender;
-    public readonly BirthDate : Date;
-    public readonly Address : string;
-    public readonly Phone : string;
-    public  Role : Role;
-    public readonly  Gym : string;
+    private  _id : string;
+    private  firstName : string;
+    private  lastName : string;
+    private  Email : string;
+    private  Password : string;
+    private  Gender : Gender;
+    private  BirthDate : Date;
+    private  Address : string;
+    private  Phone : string;
+    private  Height : number;
+    private  Weight : number;
+    private  Role : Role;
+    private  Gym : string;
 
 
     constructor(userData : any)
@@ -32,6 +34,8 @@ export class User {
         this.Phone = userData.Phone;
         this.Role = userData.Role;
         this.Gym = userData.Gym;
+        this.Height = userData.Height;
+        this.Weight = userData.Weight;
     }
 
 }

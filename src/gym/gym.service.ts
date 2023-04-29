@@ -53,7 +53,8 @@ export class GymService {
   async verifGymExist(id : string) : Promise<gym>
   {
     const verifGym = await this.gymModel.findOne({_id : id});
-    return verifGym;
+    const Gym = new gym(verifGym);
+    return Gym;
   }
   async verifGymExistID(gymId : string) : Promise<Boolean>
   {
@@ -138,7 +139,7 @@ export class GymService {
     const currentgym : gym = new gym(updateGymDto);
     const updatedGym = await this.gymModel.findByIdAndUpdate(
       {_id : req.user.gym},
-      {$set: currentgym},
+      {$set: updateGymDto},
       {new: true},
     )
     if(!isEmpty(updatedGym)) return {"message" : "gym updated successfully"};

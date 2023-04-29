@@ -30,7 +30,7 @@ export class Person {
     @Prop({ required:true})
     Password : string;
   
-    @Prop({ required: true, enum: Gender, default: Gender.MEN})
+    @Prop({ required: true})
     Gender : Gender;
 
     @Prop({ required:true, get: formatDate, set: parseDate})

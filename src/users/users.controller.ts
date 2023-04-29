@@ -45,12 +45,14 @@ export class UsersController {
   /**
    * Problem because when i sent only token he call this method before the info method this is why there is an error here
    * he took the id as a null
+   * 
+   * Working Now :)
    */
-  // @UseGuards(AuthGuard('jwt'))
-  // @Get('/:id')
-  // async findOne(@Param('id') id: string,@Request() req : any) : Promise<User> {
-  //   return await this.usersService.findOne(id,req);
-  // }
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/find/:id')
+  async findOne(@Param('id') id: string,@Request() req : any) : Promise<User> {
+    return await this.usersService.findOne(id,req);
+  }
 
   @UseGuards(AuthGuard('jwt'))
   @Patch('/:id')

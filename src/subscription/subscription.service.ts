@@ -53,7 +53,9 @@ export class SubscriptionService {
   }
 
 
-  async findOne(id: string) : Promise<any> {
+  async findOne(id: string,req : any) : Promise<any> {
+
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
 
     this.verifValidId(id);
     const currrentSubs = await this.subscriptionModel.findOne({_id: id}).exec();

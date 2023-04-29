@@ -14,15 +14,9 @@ export class CreateSubscriptionDto {
     @IsString()
     Description : string;
 
-
     @IsNotEmpty()
     @IsNumberString()
-    Price : number;
-
-
-    @IsNotEmpty()
-    @IsNumberString()
-    Duration : number;
+    PricePerMonth : number;
 
     @IsNotEmpty()
     @IsString()

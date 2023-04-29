@@ -45,11 +45,11 @@ export class CreateUserDto {
 
     
     @IsNumber()
-    @IsOptional()
+    @IsNotEmpty()
     Height : number;
     
     @IsNumber()
-    @IsOptional()
+    @IsNotEmpty()
     Weight : number;
     
     @IsNumberString()

@@ -22,9 +22,10 @@ export class ReservationController {
     return await this.reservationService.findAll(req);
   }
 
+  @UseGuards(AuthGuard("jwt"))
   @Get(':id')
-  async findOne(@Param('id') id: string) : Promise<reservation> {
-    return await this.reservationService.findOne(id);
+  async findOne(@Param('id') id: string,@Request() req : any) : Promise<reservation> {
+    return await this.reservationService.findOne(id,req);
   }
 
   @UseGuards(AuthGuard("jwt"))

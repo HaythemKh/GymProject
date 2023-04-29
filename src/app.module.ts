@@ -9,6 +9,8 @@ import { EquipmentModule } from './equipment/equipment.module';
 import { ReservationModule } from './reservation/reservation.module';
 import { CourseModule } from './course/course.module';
 import { AuthModule } from './auth/auth.module';
+import { RegistrationModule } from './registration/registration.module';
+import { SubsMembershipModule } from './subs-membership/subs-membership.module';
 
 @Module({
   imports: [
@@ -21,7 +23,9 @@ import { AuthModule } from './auth/auth.module';
     EquipmentModule,
     ReservationModule,
     CourseModule,
-    AuthModule
+    AuthModule,
+    RegistrationModule,
+    SubsMembershipModule
   ],
   controllers: [],
   providers: [],

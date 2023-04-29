@@ -2,16 +2,16 @@ import { CreateGymDto } from "../dto/create-gym.dto";
 
 export class gym {
 
-    public  _id : string;
-    public readonly fullName : string;
-    public readonly address : string;
-    public readonly phone : string;
-    public readonly Email : string;
-    public readonly gymConfig : string;
-    public readonly users : string[];
-    public readonly subscriptions : string[];
-    public readonly equipments : string[];
-    public readonly courses : string[];
+    private  _id : string;
+    private  fullName : string;
+    private  address : string;
+    private  phone : string;
+    private  Email : string;
+    private  gymConfig : string;
+    private  users : string[];
+    private  subscriptions : string[];
+    private  equipments : string[];
+    private  courses : string[];
 
 
     constructor(GymData : any)

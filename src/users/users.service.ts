@@ -36,8 +36,8 @@ export class UsersService {
     else if(CurrentUser.Role === Role.TRAINER)  current = new trainer(CurrentUser);
 
 
-    const userEmail = await this.userModel.findOne({Email : current.Email});
-    const userPhone = await this.userModel.findOne({Phone : current.Phone});
+    const userEmail = await this.userModel.findOne({Email : CurrentUser.Email});
+    const userPhone = await this.userModel.findOne({Phone : CurrentUser.Phone});
     this.verifValidId(req.user.gym);
     if (!isEmpty(userEmail)) throw new NotFoundException("Email Exist");
     else
@@ -114,6 +114,8 @@ export class UsersService {
  
 
  async findOne(id: string,req : any) : Promise<User> {
+
+  if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
 
    this.verifValidId(id);
    const currrentUser = await this.userModel.findOne({_id: id, Gym : req.user.gym}).exec();

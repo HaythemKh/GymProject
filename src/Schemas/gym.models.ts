@@ -1,5 +1,5 @@
 import {Prop,Schema,SchemaFactory}  from '@nestjs/mongoose';
-import {Document, Types}  from 'mongoose';
+import mongoose, {Document, Types}  from 'mongoose';
 
 export type GymDocument = Gym & Document;
 
@@ -21,16 +21,16 @@ export class Gym {
     @Prop({ required:true, unique: true})
     gymConfig : string;
 
-    @Prop({ type: [{ type: Types.ObjectId, ref: 'Person' }], default: [] })
+    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }], default: [] })
     users : string[];
 
-    @Prop({ type: [{ type: Types.ObjectId, ref: 'Subscription' }], default: [] })
+    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'subscription' }], default: [] })
     subscriptions : string[];
 
-    @Prop({ type: [{ type: Types.ObjectId, ref: 'Equipment' }], default: [] })
+    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'equipment' }], default: [] })
     equipments : string[];
 
-    @Prop({ type: [{ type: Types.ObjectId, ref: 'Course' }], default: [] })
+    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'course' }], default: [] })
     courses : string[];
 
 

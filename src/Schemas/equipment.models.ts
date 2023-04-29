@@ -1,5 +1,5 @@
 import {Prop,Schema,SchemaFactory}  from '@nestjs/mongoose';
-import {Document}  from 'mongoose';
+import mongoose, {Document}  from 'mongoose';
 
 export type EquipmentDocument = Equipment & Document;
 
@@ -18,7 +18,7 @@ export class Equipment {
     @Prop({ required:true})
     Image : string;
 
-    @Prop({ required:true})
+    @Prop({ required:true , type: mongoose.Schema.Types.ObjectId, ref: 'gym'})
     Gym : string;
 }
 

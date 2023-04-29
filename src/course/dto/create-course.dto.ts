@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import {IsNotEmpty,IsEmail,IsOptional,IsNumber,IsDate,IsString,ArrayMinSize,IsPhoneNumber, IsBoolean, IsDateString} from 'class-validator'
+import {IsNotEmpty,IsEmail,IsOptional,IsNumber,IsDate,IsString,ArrayMinSize,IsPhoneNumber, IsBoolean, IsDateString, IsNumberString} from 'class-validator'
 
 export class CreateCourseDto {
     @Exclude()
@@ -25,11 +25,14 @@ export class CreateCourseDto {
     @IsString()
     Gym : string;
 
-    @IsOptional()
-    @IsDateString()
-    StartDate : string;
+    @IsNumberString()
+    PricePerMonth : number;
 
-    @IsOptional()
-    @IsDateString()
-    EndDate : string;
+    // @IsOptional()
+    // @IsDateString()
+    // StartDate : string;
+
+    // @IsOptional()
+    // @IsDateString()
+    // EndDate : string;
 }

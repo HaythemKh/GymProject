@@ -25,13 +25,13 @@ export class CourseService {
 
     if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
 
-    await this.validationCourseTime(createCourseDto);
+    // await this.validationCourseTime(createCourseDto);
     createCourseDto.Gym = req.user.gym;
     let Course : course = new course(createCourseDto);
-    const start = new Date(createCourseDto.StartDate);
-    const end = new Date(createCourseDto.EndDate);
-    Course.setStartDate(start);
-    Course.setEndDate(end);
+    // const start = new Date(createCourseDto.StartDate);
+    // const end = new Date(createCourseDto.EndDate);
+    // Course.setStartDate(start);
+    // Course.setEndDate(end);
 
     const created = await this.CourseModel.create(Course);
     if(!created) throw new NotFoundException("problem with Course creation ");
@@ -40,12 +40,12 @@ export class CourseService {
      return {"message" : "Course added successfully"};
   }
 
-  async validationCourseTime(data : CreateCourseDto) : Promise<any>
+  async validationCourseTime(data : UpdateCourseDto) : Promise<any>
   {
-    this.gymService.verifValidId(data.Gym);
-    this.userService.verifValidId(data.Trainer);
-   if(!(await this.gymService.verifGymExistID(data.Gym))) throw new BadRequestException("This gym doesn't exist ");
-   if(!(this.userService.IsTrainerExist(data.Trainer))) throw new BadRequestException("This Trainer doesn't exist ");
+  //   this.gymService.verifValidId(data.Gym);
+  //   this.userService.verifValidId(data.Trainer);
+  //  if(!(await this.gymService.verifGymExistID(data.Gym))) throw new BadRequestException("This gym doesn't exist ");
+  //  if(!(this.userService.IsTrainerExist(data.Trainer))) throw new BadRequestException("This Trainer doesn't exist ");
 
    const now = new Date();
    const startDate = new Date(data.StartDate);

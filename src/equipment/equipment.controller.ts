@@ -21,10 +21,11 @@ export class EquipmentController {
     return await this.equipmentService.findAll(req);
   }
 
-  // @Get(':id')
-  // async findOne(@Param('id') id: string) : Promise<equipment> {
-  //   return await this.equipmentService.findOne(id);
-  // }
+  @UseGuards(AuthGuard("jwt"))
+  @Get(':id')
+  async findOne(@Param('id') id: string,@Request() req : any) : Promise<equipment> {
+    return await this.equipmentService.findOne(id,req);
+  }
 
   @UseGuards(AuthGuard("jwt"))
   @Patch(':id')

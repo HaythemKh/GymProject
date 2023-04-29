@@ -1,0 +1,109 @@
+import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { isEmpty } from 'class-validator';
+import { Model } from 'mongoose';
+import { CourseService } from 'src/course/course.service';
+import { EquipmentService } from 'src/equipment/equipment.service';
+import { GymService } from 'src/gym/gym.service';
+import { reservation } from 'src/reservation/Model/reservation.model';
+import { Registration, RegistrationDocument } from 'src/Schemas/Registration.models';
+import { Role } from 'src/Schemas/users.models';
+import { UsersService } from 'src/users/users.service';
+import { CreateRegistrationDto } from './dto/create-registration.dto';
+import { UpdateRegistrationDto } from './dto/update-registration.dto';
+import { registration } from './Model/registration.model';
+
+@Injectable()
+export class RegistrationService {
+
+  constructor(
+    @InjectModel(Registration.name) private registrationModel : Model<RegistrationDocument>,
+    @Inject(CourseService) private  courseService : CourseService,
+    @Inject(UsersService) private  usersService : UsersService,
+    @Inject(GymService) private  gymService : GymService
+  ){}
+
+  async Join(createRegistrationDto: CreateRegistrationDto,req : any) : Promise<any> {
+
+    if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Member only can get access to this !!");
+
+    this.verifValidIdCourse(createRegistrationDto.Course);
+    createRegistrationDto.Member = req.user.sub;
+
+    const verif = await this.registrationModel.findOne({Member : req.user.sub,Course :createRegistrationDto.Course });
+    if(verif) throw new BadRequestException("You are already subscribed to this course");
+    const Register = new registration(createRegistrationDto);
+    const created = await this.registrationModel.create(Register);
+    if(!created) throw new BadRequestException("there is a problem in the creation of the registration")
+    return "Registration created successfully";
+  }
+
+  verifValidIdCourse(id: string){
+    const isHexString = /^[0-9a-fA-F]+$/.test(id);
+    if(!isHexString || id.length != 24)
+     throw new NotFoundException("invalid Course ID");
+  }
+
+  verifValidId(id: string){
+    const isHexString = /^[0-9a-fA-F]+$/.test(id);
+    if(!isHexString || id.length != 24)
+     throw new NotFoundException("invalid Registration ID");
+  }
+
+  async findAll(req : any) : Promise<registration[]> {
+
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
+    const UserList = await this.gymService.getUserListByGym(req.user.gym);
+
+    const AllRegistration = await this.registrationModel.find({Member : {$in : UserList}}).exec();
+    let listRegistrations : registration[] = [] ;
+    AllRegistration.map(RegistreJson => {  
+      listRegistrations.push(new registration(RegistreJson));
+    });
+    return  listRegistrations;
+  }
+
+  async findOne(id: string, req : any) : Promise<registration> {
+
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
+    this.verifValidId(id);
+    const RegistrationModel = await this.registrationModel.findOne({_id : id}).exec();
+    if(isEmpty(RegistrationModel)) throw new NotFoundException("Registration doesn't exist");
+    const Registration : registration = new registration(RegistrationModel);
+    return  Registration;
+  }
+
+
+  async update(id: string, updateRegistrationDto: UpdateRegistrationDto,req : any) : Promise<any> {
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
+    this.verifValidId(id);
+    const foundDocument = await this.registrationModel.findOne({ _id: id}).exec();
+
+    if(isEmpty(foundDocument)) throw new NotFoundException("registration doesn't exist");
+
+    const updatedRegistration = await this.registrationModel.findByIdAndUpdate(
+      {_id : foundDocument._id},
+      {$set: updateRegistrationDto},
+      {new: true},
+    )
+
+    if(!isEmpty(updatedRegistration)) return {"message" : "registration updated successfully"};
+    else throw new NotFoundException("updating registration denied");
+  }
+
+
+  async remove(id: string,req : any) : Promise<any> {
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
+    this.verifValidId(id);
+    const deletedRegistration = await this.registrationModel.findByIdAndDelete({_id : id});
+    if(deletedRegistration)
+    {
+      return {"message" : "Registration deleted successfully"};
+    } 
+    else throw new NotFoundException("Registration doesn't exist");
+  }
+}

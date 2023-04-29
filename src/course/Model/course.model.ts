@@ -7,6 +7,7 @@ export class course {
     private Gym : string;
     private StartDate : Date;
     private EndDate : Date;
+    private PricePerMonth : number;
 
 
     constructor(anyData : any)
@@ -19,6 +20,7 @@ export class course {
         this.Gym = anyData.Gym;
         this.StartDate = anyData.StartDate;
         this.EndDate = anyData.EndDate;
+        this.PricePerMonth = anyData.PricePerMonth;
     }
 
     setStartDate(start : Date){this.StartDate = start;}

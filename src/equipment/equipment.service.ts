@@ -59,9 +59,12 @@ export class EquipmentService {
     return  listEquipments;
   }
 
-  async findOne(id: string) :Promise<equipment> {
+  async findOne(id: string,req : any) :Promise<equipment> {
+
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
     this.verifValidId(id);
-    const currrentEquip = await this.EquipmentModel.findOne({_id: id}).exec();
+    const currrentEquip = await this.EquipmentModel.findOne({_id: id,Gym : req.user.gym}).exec();
     if(isEmpty(currrentEquip)) throw new NotFoundException("equipment doesn't exist");
     const Equipment : equipment = new equipment(currrentEquip);
     return Equipment;
@@ -79,7 +82,7 @@ export class EquipmentService {
     const Equipment : equipment = new equipment(updateEquipmentDto);
     const updatedEquip = await this.EquipmentModel.findByIdAndUpdate(
       {_id : id},
-      {$set: Equipment},
+      {$set: updateEquipmentDto},
       {new: true},
     )
 

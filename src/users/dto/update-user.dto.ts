@@ -1,9 +1,13 @@
 import { Exclude } from 'class-transformer';
 import {IsEmail,IsOptional,IsNumber,IsString,IsPhoneNumber, IsNumberString } from 'class-validator'
+import { Role } from 'src/Schemas/users.models';
 export class UpdateUserDto{
 
     @Exclude()
     _id : string;
+
+    @Exclude()
+    Role : string;
     
     @IsOptional()
     @IsString()
