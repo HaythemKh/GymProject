@@ -147,6 +147,8 @@ export class UsersService {
    if(isEmpty(foundDocument)) throw new NotFoundException("user doesn't exist");
    else
    {
+    const hashedPassword = await bcrypt.hash(updateUserDto.Password,10);
+    updateUserDto.Password = hashedPassword;
    const updatedUser = await this.userModel.findByIdAndUpdate(
      {_id : id},
      {$set: updateUserDto},
