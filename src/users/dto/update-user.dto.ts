@@ -40,14 +40,14 @@ export class UpdateUserDto{
     Phone : string;
 
     @IsOptional()
-    @IsNumberString()
+    @IsNumber()
     Height : number;
     
     @IsOptional()
-    @IsNumberString()
+    @IsNumber()
     Weight : number;
     
-    @IsNumberString()
+    @IsNumber()
     @IsOptional()
     Salary : number;
 
