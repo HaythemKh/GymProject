@@ -39,11 +39,11 @@ export class UpdateUserDto{
     @IsString()
     Phone : string;
 
-    @IsNumber()
+    @IsNumberString()
     @IsOptional()
     Height : number;
     
-    @IsNumber()
+    @IsNumberString()
     @IsOptional()
     Weight : number;
     
