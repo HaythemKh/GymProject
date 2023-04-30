@@ -18,7 +18,7 @@ export class CreateCourseDto {
     Description : string;
 
     @IsNotEmpty()
-    @IsNumber()
+    @IsNumberString()
     Capacity : number;
 
     @IsOptional()

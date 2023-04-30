@@ -1,11 +1,11 @@
 export class equipment {
 
-    private  _id : string;
-    private  Name : string;
-    private  Description : string;
-    private  Availability : string;
-    private  Image : string;
-    private  Gym : string;
+    public readonly  _id : string;
+    public readonly  Name : string;
+    public readonly  Description : string;
+    public readonly  Availability : string;
+    public readonly  Image : string;
+    public readonly  Gym : string;
 
     constructor(anyData : any)
     {

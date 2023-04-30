@@ -1,10 +1,10 @@
 export class reservation{
 
-    private  _id : string;
-    private  User : string;
-    private  Equipment : string;
-    private  Start_time : Date;
-    private  End_time : Date;
+    public readonly  _id : string;
+    public readonly  User : string;
+    public readonly  Equipment : string;
+    public   Start_time : Date;
+    public   End_time : Date;
 
     constructor(anyData : any)
     {

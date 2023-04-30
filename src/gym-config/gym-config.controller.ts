@@ -11,7 +11,7 @@ export class GymConfigController {
 
   @UseGuards(AuthGuard("jwt"))
   @Get('MyGymConfig')
-  async findOne(@Request() req: any) : Promise<gymConfig> {
+  async findOne(@Request() req: any) : Promise<gymConfig[]> {
     return await this.gymConfigService.findOne(req);
   }
 

@@ -3,6 +3,7 @@ import { SubsMembershipService } from './subs-membership.service';
 import { CreateSubsMembershipDto } from './dto/create-subs-membership.dto';
 import { UpdateSubsMembershipDto } from './dto/update-subs-membership.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { subsmembership } from './Model/subsmembership.model';
 
 @Controller('subsMembership')
 export class SubsMembershipController {
@@ -20,18 +21,21 @@ export class SubsMembershipController {
     return await this.subsMembershipService.findAll(req);
   }
 
+  @UseGuards(AuthGuard("jwt"))
   @Get(':id')
-  async findOne(@Param('id') id: string) : Promise<any>{
-    return await this.subsMembershipService.findOne(id);
+  async findOne(@Param('id') id: string,@Request() req : any) : Promise<subsmembership>{
+    return await this.subsMembershipService.findOne(id,req);
   }
 
+  @UseGuards(AuthGuard("jwt"))
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateSubsMembershipDto: UpdateSubsMembershipDto) : Promise<any> {
-    return await this.subsMembershipService.update(id, updateSubsMembershipDto);
+  async update(@Param('id') id: string, @Body() updateSubsMembershipDto: UpdateSubsMembershipDto,@Request() req : any) : Promise<any> {
+    return await this.subsMembershipService.update(id, updateSubsMembershipDto,req);
   }
 
+  @UseGuards(AuthGuard("jwt"))
   @Delete(':id')
-  async remove(@Param('id') id: string) :Promise<any> {
-    return await this.subsMembershipService.remove(id);
+  async remove(@Param('id') id: string,@Request() req : any) :Promise<any> {
+    return await this.subsMembershipService.remove(id,req);
   }
 }

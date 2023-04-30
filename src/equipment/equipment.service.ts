@@ -49,7 +49,7 @@ export class EquipmentService {
   async findAll(req : any) : Promise<equipment[]> {
 
     if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
-
+    
     const AllEquipments = await this.EquipmentModel.find({Gym : req.user.gym}).exec();
     let listEquipments : equipment[] = [] ;
     AllEquipments.map(EquipmentJson => {
@@ -82,7 +82,7 @@ export class EquipmentService {
     const Equipment : equipment = new equipment(updateEquipmentDto);
     const updatedEquip = await this.EquipmentModel.findByIdAndUpdate(
       {_id : id},
-      {$set: updateEquipmentDto},
+      {$set: Equipment},
       {new: true},
     )
 

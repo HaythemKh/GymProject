@@ -1,5 +1,6 @@
 import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
 import { CourseService } from 'src/course/course.service';
 import { GymService } from 'src/gym/gym.service';
@@ -59,15 +60,43 @@ export class SubsMembershipService {
     return  listMemberships;
   }
 
-  async findOne(id: string) : Promise<any> {
-    return `This action returns a #${id} subsMembership`;
+  async findOne(id: string,req : any) : Promise<subsmembership> {
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
+    this.verifValidId(id);
+    const SubsMembershipModel = await this.subsMembershipModel.findOne({_id : id}).exec();
+    if(isEmpty(SubsMembershipModel)) throw new NotFoundException("SubsMembership doesn't exist");
+    const Subsmembership : subsmembership = new subsmembership(SubsMembershipModel);
+    return  Subsmembership;
   }
 
-  async update(id: string, updateSubsMembershipDto: UpdateSubsMembershipDto) : Promise<any> {
-    return `This action updates a #${id} subsMembership`;
+  async update(id: string, updateSubsMembershipDto: UpdateSubsMembershipDto,req : any) : Promise<any> {
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
+    this.verifValidId(id);
+    const foundDocument = await this.subsMembershipModel.findOne({ _id: id}).exec();
+
+    if(isEmpty(foundDocument)) throw new NotFoundException("subsMembership doesn't exist");
+    const subsMembership = new subsmembership(updateSubsMembershipDto);
+    const updatedSubsMembership = await this.subsMembershipModel.findByIdAndUpdate(
+      {_id : foundDocument._id},
+      {$set: subsMembership},
+      {new: true},
+    )
+
+    if(!isEmpty(updatedSubsMembership)) return {"message" : "subsMembership updated successfully"};
+    else throw new NotFoundException("updating subsMembership denied");
   }
 
-  async remove(id: string) : Promise<any> {
-    return `This action removes a #${id} subsMembership`;
+  async remove(id: string,req : any) : Promise<any> {
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
+    this.verifValidId(id);
+    const deletedsubsMembership = await this.subsMembershipModel.findByIdAndDelete({_id : id});
+    if(deletedsubsMembership)
+    {
+      return {"message" : "subsMembership deleted successfully"};
+    } 
+    else throw new NotFoundException("subsMembership doesn't exist");
   }
 }

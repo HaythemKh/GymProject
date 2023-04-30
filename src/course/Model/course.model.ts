@@ -1,13 +1,13 @@
 export class course {
-    private _id : string;
-    private Name : string;
-    private Trainer : string;
-    private Description : string;
-    private Capacity : number;
-    private Gym : string;
-    private StartDate : Date;
-    private EndDate : Date;
-    private PricePerMonth : number;
+    public readonly _id : string;
+    public readonly Name : string;
+    public readonly Trainer : string;
+    public readonly Description : string;
+    public readonly Capacity : number;
+    public readonly Gym : string;
+    public StartDate : Date;
+    public EndDate : Date;
+    public readonly PricePerMonth : number;
 
 
     constructor(anyData : any)

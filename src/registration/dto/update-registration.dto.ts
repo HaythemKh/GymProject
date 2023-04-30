@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { IsBooleanString, IsNotEmpty, IsNumberString, IsOptional, IsString } from 'class-validator';
+import { IsBooleanString, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsString } from 'class-validator';
 import { CreateRegistrationDto } from './create-registration.dto';
 
 export class UpdateRegistrationDto{
@@ -21,10 +21,10 @@ export class UpdateRegistrationDto{
     IsActive : Boolean;
 
     @IsOptional()
-    @IsNumberString()
+    @IsNumber()
     Duration : number;
 
     @IsNotEmpty()
-    @IsNumberString()
+    @IsNumber()
     Price : number;
 }

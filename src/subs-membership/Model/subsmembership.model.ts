@@ -1,11 +1,11 @@
 export class subsmembership {
     
-    private _id : string;
-    private Member : string;
-    private Subscription : string;
-    private IsActive : Boolean;
-    private Price : number;
-    private Duration : number;
+    public readonly _id : string;
+    public readonly Member : string;
+    public readonly Subscription : string;
+    public readonly IsActive : Boolean;
+    public readonly Price : number;
+    public readonly Duration : number;
 
     constructor(subsData : any)
     {

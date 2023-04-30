@@ -147,15 +147,17 @@ export class UsersService {
    if(isEmpty(foundDocument)) throw new NotFoundException("user doesn't exist");
    else
    {
-    if(updateUserDto.Password !== undefined)
-    {
-      if((updateUserDto.Password).length < 6) throw new  BadRequestException("the length of password should be greater or equal to 6");
-    }
     const hashedPassword = await bcrypt.hash(updateUserDto.Password,10);
     updateUserDto.Password = hashedPassword;
+    let user : User = null;
+
+    if (foundDocument.Role === Role.ADMIN)  user = new admin(updateUserDto);
+    else if(foundDocument.Role === Role.MEMBER) user = new member(updateUserDto);
+    else if(foundDocument.Role === Role.TRAINER)  user = new trainer(updateUserDto);
+
    const updatedUser = await this.userModel.findByIdAndUpdate(
      {_id : id},
-     {$set: updateUserDto},
+     {$set: user},
      {new: true},
    )
    if(!isEmpty(updatedUser)) return {"message" : "user updated successfully"};

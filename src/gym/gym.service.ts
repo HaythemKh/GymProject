@@ -120,14 +120,16 @@ export class GymService {
     return  listGyms;
   }
 
-  async findOne(req: any) : Promise<gym> {
+  async findOne(req: any) : Promise<gym[]> {
     if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
 
     const currrentGym = await this.gymModel.findOne({_id: req.user.gym}).exec();
     if(isEmpty(currrentGym)) throw new NotFoundException("gym doesn't exist");
 
     const Gym : gym = new gym(currrentGym);
-    return Gym;
+    let MyGym : gym[] = [];
+    MyGym.push(Gym);
+    return MyGym;
   }
 
   async update(req: any, updateGymDto: UpdateGymDto) : Promise<any> {
@@ -139,7 +141,7 @@ export class GymService {
     const currentgym : gym = new gym(updateGymDto);
     const updatedGym = await this.gymModel.findByIdAndUpdate(
       {_id : req.user.gym},
-      {$set: updateGymDto},
+      {$set: currentgym},
       {new: true},
     )
     if(!isEmpty(updatedGym)) return {"message" : "gym updated successfully"};

@@ -34,7 +34,7 @@ export class GymConfigService {
        throw new NotFoundException("invalid GymConfig ID");
     }
   
-    async findOne(req: any) : Promise<gymConfig> {
+    async findOne(req: any) : Promise<gymConfig[]> {
 
       if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
       const gym = await this.gymModel.findOne({_id : req.user.gym});
@@ -42,7 +42,9 @@ export class GymConfigService {
       if(!currrentConfig) throw new NotFoundException("this GymConfig doesn't exist");
   
       const Config : gymConfig = new gymConfig(currrentConfig);
-      return  Config;
+      let myConfig : gymConfig[] = [];
+      myConfig.push(Config);
+      return  myConfig;
     }
   
     async update(req: any, updateGymConfigDto: UpdateGymConfigDto) : Promise<any> {
@@ -60,9 +62,10 @@ export class GymConfigService {
       if((updateGymConfigDto.ClosingTime) !== undefined)
       updateGymConfigDto.ClosingTime = new Date(Date.parse(`01/01/2000 ${updateGymConfigDto.ClosingTime}`));
       
+      const Config = new gymConfig(updateGymConfigDto);
       const updatedGym = await this.gymConfigModel.findByIdAndUpdate(
         {_id : gym.gymConfig},
-        {$set: updateGymConfigDto},
+        {$set: Config},
         {new: true},
       )
       if(!isEmpty(updatedGym)) return {"message" : "gymConfig updated successfully"};

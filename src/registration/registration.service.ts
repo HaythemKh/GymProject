@@ -83,10 +83,10 @@ export class RegistrationService {
     const foundDocument = await this.registrationModel.findOne({ _id: id}).exec();
 
     if(isEmpty(foundDocument)) throw new NotFoundException("registration doesn't exist");
-
+    const Registration = new registration(updateRegistrationDto);
     const updatedRegistration = await this.registrationModel.findByIdAndUpdate(
       {_id : foundDocument._id},
-      {$set: updateRegistrationDto},
+      {$set: Registration},
       {new: true},
     )
 

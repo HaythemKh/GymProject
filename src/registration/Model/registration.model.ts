@@ -1,10 +1,10 @@
 export class registration {
-    private _id : string;
-    private Member : string;
-    private Course : string;
-    private IsActive : Boolean;
-    private Price : number;
-    private Duration : number;
+    public readonly _id : string;
+    public readonly Member : string;
+    public readonly Course : string;
+    public readonly IsActive : Boolean;
+    public readonly Price : number;
+    public readonly Duration : number;
 
     constructor(Data : any){
         this._id = Data._id;

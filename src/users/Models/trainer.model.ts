@@ -3,7 +3,7 @@ import { User } from "./user.model";
 
 export class trainer extends User {
 
-   private  Salary : number;
+   public readonly  Salary : number;
 
    constructor(userData :any)
    {
