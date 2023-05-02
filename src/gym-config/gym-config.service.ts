@@ -19,7 +19,10 @@ export class GymConfigService {
 
     async create(createGymConfigDto: CreateGymConfigDto) : Promise<any> {
 
+      console.log(createGymConfigDto)
       const NewConfig = new gymConfig(createGymConfigDto);
+
+      console.log(NewConfig)
   
       const created = await this.gymConfigModel.create(NewConfig);
   
@@ -34,7 +37,7 @@ export class GymConfigService {
        throw new NotFoundException("invalid GymConfig ID");
     }
   
-    async findOne(req: any) : Promise<gymConfig[]> {
+    async findOne(req: any) : Promise<gymConfig> {
 
       if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
       const gym = await this.gymModel.findOne({_id : req.user.gym});
@@ -42,9 +45,7 @@ export class GymConfigService {
       if(!currrentConfig) throw new NotFoundException("this GymConfig doesn't exist");
   
       const Config : gymConfig = new gymConfig(currrentConfig);
-      let myConfig : gymConfig[] = [];
-      myConfig.push(Config);
-      return  myConfig;
+      return  Config;
     }
   
     async update(req: any, updateGymConfigDto: UpdateGymConfigDto) : Promise<any> {
@@ -78,5 +79,15 @@ export class GymConfigService {
       const deletedGymConfig = await this.gymConfigModel.findByIdAndDelete({_id : id});
       if(deletedGymConfig) return true;
       throw new NotFoundException("gymConfig doesn't exist");
+    }
+
+    async findOneGym(id: string) : Promise<gymConfig> {
+
+      const gym = await this.gymModel.findOne({_id : id});
+      const currrentConfig = await this.gymConfigModel.findOne({_id: gym.gymConfig}).exec();
+      if(!currrentConfig) throw new NotFoundException("this GymConfig doesn't exist");
+  
+      const Config : gymConfig = new gymConfig(currrentConfig);
+      return  Config;
     }
 }

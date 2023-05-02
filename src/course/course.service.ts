@@ -67,7 +67,7 @@ export class CourseService {
 
     const AllCourses = await this.CourseModel.find({Gym : req.user.gym}).exec();
     let listCourses : course[] = [] ;
-    AllCourses.map(CourseJson => {  
+    AllCourses.map(CourseJson => { 
       listCourses.push(new course(CourseJson));
     });
     return  listCourses;

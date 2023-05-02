@@ -21,7 +21,7 @@ export class GymController {
   }
   @UseGuards(AuthGuard("jwt"))
   @Get('MyGym')
-  async findOne(@Request() req : any) : Promise<gym[]> {
+  async findOne(@Request() req : any) : Promise<gym> {
     return await this.gymService.findOne(req);
   }
 

@@ -11,7 +11,7 @@ export class GymConfigController {
 
   @UseGuards(AuthGuard("jwt"))
   @Get('MyGymConfig')
-  async findOne(@Request() req: any) : Promise<gymConfig[]> {
+  async findOne(@Request() req: any) : Promise<gymConfig> {
     return await this.gymConfigService.findOne(req);
   }
 
@@ -20,4 +20,9 @@ export class GymConfigController {
   update(@Request() req: any, @Body() updateGymConfigDto: UpdateGymConfigDto) {
     return this.gymConfigService.update(req, updateGymConfigDto);
   }
+
+  // @Get('/find/:id')
+  // async findOneGym(@Param('id') id: string) : Promise<gymConfig> {
+  //   return await this.gymConfigService.findOneGym(id);
+  // }
 }

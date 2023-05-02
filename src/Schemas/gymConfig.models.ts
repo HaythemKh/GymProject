@@ -1,6 +1,5 @@
 import {Prop,Schema,SchemaFactory}  from '@nestjs/mongoose';
-import {Document}  from 'mongoose';
-
+import mongoose, {Document}  from 'mongoose';
 
 export type GymConfigDocument = GymConfig & Document;
 
@@ -17,7 +16,22 @@ export class GymConfig {
     Logo : string;
 
     @Prop({ required:true})
-    Color : string;
+    BackgroundLightMode : string;
+
+    @Prop({ required:true})
+    BackgroundDarkMode : string;
+
+    @Prop({ required:true})
+    TextColorLightMode : string;
+
+    @Prop({ required:true})
+    TextColorDarkMode : string;
+
+    @Prop({ required:true})
+    BtnColorLightMode : string;
+
+    @Prop({ required:true})
+    BtnColorDarkMode : string;
 }
 
 

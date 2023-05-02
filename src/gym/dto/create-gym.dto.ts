@@ -1,6 +1,6 @@
 
-import { Exclude } from 'class-transformer';
-import {IsNotEmpty,IsEmail,IsOptional,IsNumber,IsDate,IsString,ArrayMinSize,IsPhoneNumber} from 'class-validator'
+import { Exclude, Type } from 'class-transformer';
+import {IsNotEmpty,IsEmail,IsOptional,IsNumber,IsDate,IsString,ArrayMinSize,IsPhoneNumber, ValidateNested, Matches} from 'class-validator'
 
 export class CreateGymDto {
 
@@ -52,9 +52,35 @@ export class CreateGymDto {
     @IsString()
     Logo : string;
 
-    @IsNotEmpty()
     @IsString()
-    Color : string;
+    @IsNotEmpty()
+    @Matches(/^#([0-9a-fA-F]{3}){1,2}$/)
+    BackgroundLightMode : string;
+
+    @IsString()
+    @IsNotEmpty()
+    @Matches(/^#([0-9a-fA-F]{3}){1,2}$/)
+    BackgroundDarkMode : string;
+
+    @IsString()
+    @IsNotEmpty()
+    @Matches(/^#([0-9a-fA-F]{3}){1,2}$/)
+    TextColorLightMode : string;
+
+    @IsString()
+    @IsNotEmpty()
+    @Matches(/^#([0-9a-fA-F]{3}){1,2}$/)
+    TextColorDarkMode : string;
+
+    @IsString()
+    @IsNotEmpty()
+    @Matches(/^#([0-9a-fA-F]{3}){1,2}$/)
+    BtnColorLightMode : string;
+
+    @IsString()
+    @IsNotEmpty()
+    @Matches(/^#([0-9a-fA-F]{3}){1,2}$/)
+    BtnColorDarkMode : string;
 
     @IsOptional()
     @IsString()

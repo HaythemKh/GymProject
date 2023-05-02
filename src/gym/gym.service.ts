@@ -27,23 +27,21 @@ export class GymService {
   
   async create(createGymDto: CreateGymDto, req :any) : Promise<any> {
     
-    let {OpeningTime,ClosingTime,Logo,Color} = createGymDto;
+    let {OpeningTime,ClosingTime,Logo,BackgroundLightMode,BackgroundDarkMode,TextColorLightMode,TextColorDarkMode,BtnColorLightMode,BtnColorDarkMode} = createGymDto;
     let myOpeneningtime = OpeningTime;OpeningTime = new Date(Date.parse(`01/01/2000 ${myOpeneningtime}`));
     let myClosingtime = ClosingTime;ClosingTime = new Date(Date.parse(`01/01/2000 ${myClosingtime}`));
 
-    const createConfig : CreateGymConfigDto = {OpeningTime,ClosingTime,Logo,Color};
+    const createConfig : CreateGymConfigDto = {OpeningTime,ClosingTime,Logo,BackgroundLightMode,BackgroundDarkMode,TextColorLightMode,TextColorDarkMode,BtnColorLightMode,BtnColorDarkMode};
 
     const verifEmail = await this.gymModel.findOne({Email : createGymDto.Email});
 
     if (!isEmpty(verifEmail))
     throw new NotFoundException("Email already reserved to another gym ");
     
-    
     const ConfigId = await this.gymConfigService.create(createConfig);
     createGymDto.gymConfig = ConfigId;
     const newGym = new gym(createGymDto);
 
-    
     const createdGym = await this.gymModel.create(newGym);
     if(createdGym)
     return {"message" : "gym created successfully"};
@@ -120,16 +118,14 @@ export class GymService {
     return  listGyms;
   }
 
-  async findOne(req: any) : Promise<gym[]> {
+  async findOne(req: any) : Promise<gym> {
     if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
 
     const currrentGym = await this.gymModel.findOne({_id: req.user.gym}).exec();
     if(isEmpty(currrentGym)) throw new NotFoundException("gym doesn't exist");
 
     const Gym : gym = new gym(currrentGym);
-    let MyGym : gym[] = [];
-    MyGym.push(Gym);
-    return MyGym;
+    return Gym;
   }
 
   async update(req: any, updateGymDto: UpdateGymDto) : Promise<any> {
