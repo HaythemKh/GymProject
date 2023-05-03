@@ -19,10 +19,10 @@ export class CreateSubsMembershipDto {
     IsActive : Boolean;
 
     @IsNotEmpty()
-    @IsNumberString()
+    @IsNumber()
     Price : number;
 
     @IsNotEmpty()
-    @IsNumberString()
+    @IsNumber()
     Duration : number;
 }

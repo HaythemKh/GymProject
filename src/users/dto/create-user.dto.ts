@@ -44,15 +44,15 @@ export class CreateUserDto {
     Phone : string;
 
     
-    @IsNumberString()
+    @IsNumber()
     @IsNotEmpty()
     Height : number;
     
-    @IsNumberString()
+    @IsNumber()
     @IsNotEmpty()
     Weight : number;
     
-    @IsNumberString()
+    @IsNumber()
     @IsOptional()
     Salary : number;
 

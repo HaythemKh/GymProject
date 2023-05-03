@@ -15,7 +15,7 @@ export class CreateSubscriptionDto {
     Description : string;
 
     @IsNotEmpty()
-    @IsNumberString()
+    @IsNumber()
     PricePerMonth : number;
 
     @IsNotEmpty()
