@@ -62,7 +62,7 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get("/MyProfile")
-  async PersonalInformation(@Request() req : any) : Promise<any[]> {
+  async PersonalInformation(@Request() req : any) : Promise<any> {
     return await this.usersService.PersonalInformation(req);
   }
 

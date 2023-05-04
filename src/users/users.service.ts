@@ -182,7 +182,7 @@ export class UsersService {
    else throw new NotFoundException("user doesn't exist");
  }
 
- async PersonalInformation (req : any) : Promise<any[]>{
+ async PersonalInformation (req : any) : Promise<any>{
   const currrentUser = await this.userModel.findOne({_id: req.user.sub, Gym : req.user.gym}).exec();
    if(isEmpty(currrentUser)) throw new NotFoundException("user doesn't exist");
    else
@@ -193,10 +193,7 @@ export class UsersService {
      if(currrentUser["Role"] == "member") user = new member(currrentUser);
      if(currrentUser["Role"] == "admin") user = new admin(currrentUser);
 
-     let myprofile : User[] = [];
-     myprofile.push(user);
-
-     return myprofile;
+     return user;
    }
 }
 
