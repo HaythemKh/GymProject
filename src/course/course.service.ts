@@ -4,7 +4,7 @@ import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
 import { GymService } from 'src/gym/gym.service';
 import { Course, CourseDocument } from 'src/Schemas/course.models';
-import { Role } from 'src/Schemas/users.models';
+import { Person, Role, UserDocument } from 'src/Schemas/users.models';
 import { UsersModule } from 'src/users/users.module';
 import { UsersService } from 'src/users/users.service';
 import { CreateCourseDto } from './dto/create-course.dto';
@@ -17,7 +17,9 @@ export class CourseService {
   constructor(
     @InjectModel(Course.name) private CourseModel : Model<CourseDocument>,
     @Inject(GymService) private  gymService : GymService,
-    @Inject(UsersService) private  userService : UsersService
+    @Inject(UsersService) private  userService : UsersService,
+    @InjectModel(Person.name) private userModel : Model<UserDocument>, 
+
   ){}
 
 
@@ -65,12 +67,22 @@ export class CourseService {
     
     if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
 
-    const AllCourses = await this.CourseModel.find({Gym : req.user.gym}).exec();
-    let listCourses : course[] = [] ;
-    AllCourses.map(CourseJson => { 
-      listCourses.push(new course(CourseJson));
-    });
-    return  listCourses;
+    const AllCourses = await this.CourseModel.find({Gym : req.user.gym});
+    const results = [];
+
+      for (const course of AllCourses) {
+      const trainer = await this.userModel.findById(course.Trainer);
+
+      if (trainer) {
+      const combinedData = {
+        ...course.toObject(),
+        trainerName: trainer.firstName,
+        trainerLastname: trainer.lastName,
+      };
+      results.push(combinedData);
+    }
+  }
+    return  results;
   }
 
   async findOne(id: string) :Promise<course> {

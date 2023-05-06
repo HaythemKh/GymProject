@@ -27,12 +27,21 @@ export class GymService {
   
   async create(createGymDto: CreateGymDto, req :any) : Promise<any> {
     
-    let {OpeningTime,ClosingTime,Logo,BackgroundLightMode,BackgroundDarkMode,TextColorLightMode,TextColorDarkMode,BtnColorLightMode,BtnColorDarkMode} = createGymDto;
+    let {OpeningTime,ClosingTime,Logo,BackgroundLightMode,BackgroundDarkMode,TextColorLightMode,TextColorDarkMode,BtnColorLightMode,BtnColorDarkMode,SidebarLightMode,
+      SidebarDarkMode,
+      NavbarLightMode,
+      NavbarDarkMode} = createGymDto;
+      
     let myOpeneningtime = OpeningTime;OpeningTime = new Date(Date.parse(`01/01/2000 ${myOpeneningtime}`));
     let myClosingtime = ClosingTime;ClosingTime = new Date(Date.parse(`01/01/2000 ${myClosingtime}`));
 
-    const createConfig : CreateGymConfigDto = {OpeningTime,ClosingTime,Logo,BackgroundLightMode,BackgroundDarkMode,TextColorLightMode,TextColorDarkMode,BtnColorLightMode,BtnColorDarkMode};
-
+    const createConfig : CreateGymConfigDto = {
+      OpeningTime, ClosingTime, Logo, BackgroundLightMode, BackgroundDarkMode, TextColorLightMode, TextColorDarkMode, BtnColorLightMode, BtnColorDarkMode,
+      SidebarLightMode,
+      SidebarDarkMode,
+      NavbarLightMode,
+      NavbarDarkMode
+    };
     const verifEmail = await this.gymModel.findOne({Email : createGymDto.Email});
 
     if (!isEmpty(verifEmail))

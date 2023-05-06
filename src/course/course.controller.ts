@@ -16,7 +16,7 @@ export class CourseController {
   }
   @UseGuards(AuthGuard("jwt"))
   @Get("AllCourses")
-  async findAll(@Request() req : any) : Promise<course[]> {
+  async findAll(@Request() req : any) : Promise<any[]> {
     return await this.courseService.findAll(req);
   }
 

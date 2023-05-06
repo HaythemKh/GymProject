@@ -82,6 +82,26 @@ export class CreateGymDto {
     @Matches(/^#([0-9a-fA-F]{3}){1,2}$/)
     BtnColorDarkMode : string;
 
+    @IsString()
+    @IsNotEmpty()
+    @Matches(/^#([0-9a-fA-F]{3}){1,2}$/)
+    SidebarLightMode : string;
+
+    @IsString()
+    @IsNotEmpty()
+    @Matches(/^#([0-9a-fA-F]{3}){1,2}$/)
+    SidebarDarkMode : string;
+
+    @IsString()
+    @IsNotEmpty()
+    @Matches(/^#([0-9a-fA-F]{3}){1,2}$/)
+    NavbarLightMode : string;
+
+    @IsString()
+    @IsNotEmpty()
+    @Matches(/^#([0-9a-fA-F]{3}){1,2}$/)
+    NavbarDarkMode : string;
+
     @IsOptional()
     @IsString()
     gymConfig : string;
