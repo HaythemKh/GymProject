@@ -147,8 +147,12 @@ export class UsersService {
    if(isEmpty(foundDocument)) throw new NotFoundException("user doesn't exist");
    else
    {
-    const hashedPassword = await bcrypt.hash(updateUserDto.Password,10);
-    updateUserDto.Password = hashedPassword;
+    if(updateUserDto.Password !== undefined)
+    {
+      const hashedPassword = await bcrypt.hash(updateUserDto.Password,10);
+      updateUserDto.Password = hashedPassword;
+    }
+
     let user : User = null;
 
     if (foundDocument.Role === Role.ADMIN)  user = new admin(updateUserDto);

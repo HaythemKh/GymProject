@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import {IsEmail,IsOptional,IsNumber,IsString,IsPhoneNumber, IsNumberString } from 'class-validator'
+import {IsEmail,IsOptional,IsNumber,IsString,IsPhoneNumber, IsNumberString, IsDateString } from 'class-validator'
 import { Role } from 'src/Schemas/users.models';
 export class UpdateUserDto{
 
@@ -27,7 +27,7 @@ export class UpdateUserDto{
     Password : string;
 
     @IsOptional()
-    @IsString()
+    @IsDateString()
     BirthDate : Date;
 
     @IsOptional()

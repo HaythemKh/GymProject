@@ -29,6 +29,7 @@ export class User {
         this.Email = userData.Email;
         this.Password = userData.Password;
         this.Gender = userData.Gender;
+        if(userData.BirthDate !== undefined)
         this.BirthDate = userData.BirthDate;
         this.Address = userData.Address;
         this.Phone = userData.Phone;
