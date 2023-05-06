@@ -48,4 +48,24 @@ export class UpdateGymConfigDto{
     @IsString()
     @Matches(/^#([0-9a-fA-F]{3}){1,2}$/)
     BtnColorDarkMode : string;
+
+    @IsOptional()
+    @IsNotEmpty()
+    @Matches(/^#([0-9a-fA-F]{3}){1,2}$/)
+    SidebarLightMode : string;
+
+    @IsOptional()
+    @IsNotEmpty()
+    @Matches(/^#([0-9a-fA-F]{3}){1,2}$/)
+    SidebarDarkMode : string;
+
+    @IsOptional()
+    @IsNotEmpty()
+    @Matches(/^#([0-9a-fA-F]{3}){1,2}$/)
+    NavbarLightMode : string;
+
+    @IsOptional()
+    @IsNotEmpty()
+    @Matches(/^#([0-9a-fA-F]{3}){1,2}$/)
+    NavbarDarkMode : string;
 }

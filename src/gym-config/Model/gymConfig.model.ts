@@ -10,6 +10,10 @@ export class gymConfig{
     readonly TextColorDarkMode : string;
     readonly BtnColorLightMode : string;
     readonly BtnColorDarkMode : string;
+    readonly SidebarLightMode : string;
+    readonly SidebarDarkMode : string;
+    readonly NavbarLightMode : string;
+    readonly NavbarDarkMode : string;
 
     constructor(configData : any)
     {
@@ -22,6 +26,10 @@ export class gymConfig{
         this.TextColorDarkMode = configData.TextColorDarkMode;
         this.BtnColorLightMode = configData.BtnColorLightMode;
         this.BtnColorDarkMode = configData.BtnColorDarkMode;
+        this.SidebarLightMode = configData.SidebarLightMode;
+        this.SidebarDarkMode = configData.SidebarDarkMode;
+        this.NavbarLightMode = configData.NavbarLightMode;
+        this.NavbarDarkMode = configData.NavbarDarkMode;
 
         this.ClosingTime = configData.ClosingTime;
     }
