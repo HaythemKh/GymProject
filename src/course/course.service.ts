@@ -7,8 +7,8 @@ import { Course, CourseDocument } from 'src/Schemas/course.models';
 import { Person, Role, UserDocument } from 'src/Schemas/users.models';
 import { UsersModule } from 'src/users/users.module';
 import { UsersService } from 'src/users/users.service';
+import { UpdateDtoCourse } from './dto/CourseUpdate.dto';
 import { CreateCourseDto } from './dto/create-course.dto';
-import { UpdateCourseDto } from './dto/update-course.dto';
 import {  course } from './Model/course.model';
 
 @Injectable()
@@ -42,7 +42,7 @@ export class CourseService {
      return {"message" : "Course added successfully"};
   }
 
-  async validationCourseTime(data : UpdateCourseDto) : Promise<any>
+  /*async validationCourseTimeCalendar(data : UpdateCourseDto) : Promise<any>
   {
   //   this.gymService.verifValidId(data.Gym);
   //   this.userService.verifValidId(data.Trainer);
@@ -57,7 +57,7 @@ export class CourseService {
 
    if(startDate <= minStartDate) throw new BadRequestException("Course start date should be at least 24 hours from now");
    if(endDate < minEndDate) throw new BadRequestException("Course end date should be at least 48 hours after start date");
-  }
+  }*/
   verifValidId(id: string){
     const isHexString = /^[0-9a-fA-F]+$/.test(id);
     if(!isHexString || id.length != 24)
@@ -85,17 +85,31 @@ export class CourseService {
     return  results;
   }
 
-  async findOne(id: string) :Promise<course> {
-
+  async findOne(id: string,req : any) :Promise<course> {
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
     this.verifValidId(id);
-    const currrentCourse = await this.CourseModel.findOne({_id: id}).exec();
+    const currrentCourse = await this.CourseModel.findOne({_id: id,Gym : req.user.gym}).exec();
     if(isEmpty(currrentCourse)) throw new NotFoundException("Course doesn't exist");
     const Course : course = new course(currrentCourse);
     return Course;
   }
 
-  async update(id: string, updateCourseDto: UpdateCourseDto) {
-    return await `This action updates a #${id} course`;
+  async update(id: string, updateCourseDto: UpdateDtoCourse, req : any) : Promise<any>  {
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
+    this.verifValidId(id);
+    const foundDocument = await this.CourseModel.findOne({ _id: id,Gym : req.user.gym}).exec();
+
+    if(isEmpty(foundDocument)) throw new NotFoundException("course doesn't exist");
+    const Course = new course(updateCourseDto);
+    const updatedCourse = await this.CourseModel.findByIdAndUpdate(
+      {_id : id},
+      {$set: Course},
+      {new: true},
+    )
+
+    if(!isEmpty(updatedCourse)) return {"message" : "course updated successfully"};
+    else throw new NotFoundException("updating course denied");
   }
 
   async remove(id: string,req : any) : Promise<any> {

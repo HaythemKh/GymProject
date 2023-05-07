@@ -18,14 +18,14 @@ export class CreateCourseDto {
     Description : string;
 
     @IsNotEmpty()
-    @IsNumberString()
+    @IsNumber()
     Capacity : number;
 
     @IsOptional()
     @IsString()
     Gym : string;
 
-    @IsNumberString()
+    @IsNumber()
     PricePerMonth : number;
 
     // @IsOptional()

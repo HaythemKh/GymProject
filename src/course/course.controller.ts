@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards,Request } 
 import { AuthGuard } from '@nestjs/passport';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './dto/create-course.dto';
-import { UpdateCourseDto } from './dto/update-course.dto';
+import {  UpdateDtoCourse } from './dto/CourseUpdate.dto';
 import { course } from './Model/course.model';
 
 @Controller('course')
@@ -20,14 +20,16 @@ export class CourseController {
     return await this.courseService.findAll(req);
   }
 
-  // @Get(':id')
-  // async findOne(@Param('id') id: string) : Promise<course> {
-  //    await return this.courseService.findOne(+id);
-  // }
+  @UseGuards(AuthGuard("jwt"))
+  @Get(':id')
+  async findOne(@Param('id') id: string,@Request() req : any) : Promise<course> {
+    return await this.courseService.findOne(id,req);
+  }
 
+  @UseGuards(AuthGuard("jwt"))
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) :Promise<any> {
-    return await this.courseService.update(id, updateCourseDto);
+  async Update(@Param('id') id: string,@Body() UpdateDtoCourse : UpdateDtoCourse,@Request() req : any) : Promise<any>{
+    return await this.courseService.update(id,UpdateDtoCourse,req);
   }
   @UseGuards(AuthGuard("jwt"))
   @Delete(':id')
