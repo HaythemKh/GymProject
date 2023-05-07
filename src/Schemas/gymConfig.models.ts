@@ -32,6 +32,18 @@ export class GymConfig {
 
     @Prop({ required:true})
     BtnColorDarkMode : string;
+
+    @Prop({ required:true})
+    SidebarLightMode : string;
+
+    @Prop({ required:true})
+    SidebarDarkMode : string;
+
+    @Prop({ required:true})
+    NavbarLightMode : string;
+
+    @Prop({ required:true})
+    NavbarDarkMode : string;
 }
 
 
