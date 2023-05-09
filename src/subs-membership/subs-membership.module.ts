@@ -7,10 +7,14 @@ import { CourseModule } from 'src/course/course.module';
 import { GymModule } from 'src/gym/gym.module';
 import { UsersModule } from 'src/users/users.module';
 import { SubscriptionModule } from 'src/subscription/subscription.module';
+import { Person, UserSchema } from 'src/Schemas/users.models';
+import { Subscription, SubscriptionSchema } from 'src/Schemas/subscription.models';
 
 @Module({
   imports : [
     MongooseModule.forFeature([{name : SubsMembership.name, schema:SubsMembershipSchema}]),
+    MongooseModule.forFeature([{name : Person.name, schema:UserSchema}]),
+    MongooseModule.forFeature([{name : Subscription.name, schema:SubscriptionSchema}]),
     UsersModule,
     SubscriptionModule,
     GymModule

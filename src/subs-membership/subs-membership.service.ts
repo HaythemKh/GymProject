@@ -5,8 +5,9 @@ import { Model } from 'mongoose';
 import { CourseService } from 'src/course/course.service';
 import { GymService } from 'src/gym/gym.service';
 import { registration } from 'src/registration/Model/registration.model';
+import { Subscription, SubscriptionDocument } from 'src/Schemas/subscription.models';
 import { SubsMembership, SubsMembershipDocument } from 'src/Schemas/subsmembership.models';
-import { Role } from 'src/Schemas/users.models';
+import { Person, Role, UserDocument } from 'src/Schemas/users.models';
 import { subscription } from 'src/subscription/Model/subscription.model';
 import { SubscriptionService } from 'src/subscription/subscription.service';
 import { UsersService } from 'src/users/users.service';
@@ -20,6 +21,8 @@ export class SubsMembershipService {
   constructor(
     @InjectModel(SubsMembership.name) private subsMembershipModel : Model<SubsMembershipDocument>,
     @Inject(SubscriptionService) private  subscriptionService : SubscriptionService,
+    @InjectModel(Person.name) private userModel : Model<UserDocument>,
+    @InjectModel(Subscription.name) private subscriptionModel : Model<SubscriptionDocument>,
     @Inject(UsersService) private  usersService : UsersService,
     @Inject(GymService) private  gymService : GymService
   ){}
@@ -53,11 +56,24 @@ export class SubsMembershipService {
     const UserList = await this.gymService.getUserListByGym(req.user.gym);
 
     const AllMemberships = await this.subsMembershipModel.find({Member : {$in : UserList}}).exec();
-    let listMemberships : subsmembership[] = [] ;
-    AllMemberships.map(subsmembershipJson => {  
-      listMemberships.push(new subsmembership(subsmembershipJson));
-    });
-    return  listMemberships;
+    const results = [];
+
+    for (const subsUsers of AllMemberships)
+    {
+      const user = await this.userModel.findById(subsUsers.Member);
+      const subscription = await this.subscriptionModel.findById(subsUsers.Subscription);
+
+      if (user && subscription) {
+        const combinedData = {
+          ...subsUsers.toObject(),
+          MemberName: user.firstName,
+          MemberLastName: user.lastName,
+          SubscriptionName : subscription.Name
+        };
+        results.push(combinedData);
+      }
+    }
+    return  results;
   }
 
   async findOne(id: string,req : any) : Promise<subsmembership> {

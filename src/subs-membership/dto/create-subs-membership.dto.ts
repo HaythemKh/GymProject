@@ -1,12 +1,12 @@
 import { Exclude } from "class-transformer";
-import {  IsBooleanString, IsDateString, IsNotEmpty, IsNumber, IsNumberString, IsString } from "class-validator";
+import {  IsBooleanString, IsDateString, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class CreateSubsMembershipDto {
 
     @Exclude()
     _id : string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     Member : string;
 

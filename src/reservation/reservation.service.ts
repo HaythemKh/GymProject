@@ -4,12 +4,13 @@ import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
 import { EquipmentService } from 'src/equipment/equipment.service';
 import { GymService } from 'src/gym/gym.service';
+import { Equipment, EquipmentDocument } from 'src/Schemas/equipment.models';
 import { Reservation, ReservationDocument } from 'src/Schemas/reservation.models';
-import { Role } from 'src/Schemas/users.models';
+import { Person, Role, UserDocument } from 'src/Schemas/users.models';
 import { UsersService } from 'src/users/users.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
-import { reservation } from './Model/reservation.model';
+import { reservation } from './Model/reservation.model';211115
 
 @Injectable()
 export class ReservationService {
@@ -18,22 +19,26 @@ export class ReservationService {
     @InjectModel(Reservation.name) private reservationModel : Model<ReservationDocument>,
     @Inject(EquipmentService) private  equipmentService : EquipmentService,
     @Inject(UsersService) private  usersService : UsersService,
-    @Inject(GymService) private  gymService : GymService
+    @Inject(GymService) private  gymService : GymService,
+    @InjectModel(Equipment.name) private EquipmentModel : Model<EquipmentDocument>,
+    @InjectModel(Person.name) private userModel : Model<UserDocument>
   ){}
 
   async create(createReservationDto: CreateReservationDto, req : any) : Promise<any> {
 
-    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Member can reservate a specific equipment !!");
 
     this.validateReservation(createReservationDto);
 
     const verifexist = await this.reservationModel.findOne({Equipment :createReservationDto.Equipment ,Start_time :createReservationDto.Start_time,End_time : createReservationDto.End_time });
     if(verifexist) throw new NotFoundException("this equipment is reservated at this time");
+    createReservationDto.User = req.user.sub;
+
     let reserve : reservation = new reservation(createReservationDto);
     reserve.setStartDate(createReservationDto.Start_time)
     reserve.setEndDate(createReservationDto.End_time)
     
-    if(! await this.equipmentService.isAvailable(createReservationDto.Equipment)) throw new NotFoundException("this equipment is not available because she is reserved by another user");
+    // if(! await this.equipmentService.isAvailable(createReservationDto.Equipment)) throw new NotFoundException("this equipment is not available because she is reserved by another user");
     const created = await this.reservationModel.create(reserve);
     if(!created) throw new NotFoundException("problem with reservation");
 
@@ -54,7 +59,7 @@ export class ReservationService {
   validateReservation(data : CreateReservationDto) : any
   {
     this.equipmentService.verifValidId(data.Equipment);
-    this.usersService.verifValidId(data.User)
+    // this.usersService.verifValidId(data.User)
     if(!this.usersService.IsUserExist(data.User)) throw new NotFoundException("User doesn't exist!");
     if(!this.equipmentService.IsEquipmentExist(data.Equipment)) throw new NotFoundException("Equipment doesn't Exist!");
 
@@ -86,18 +91,29 @@ export class ReservationService {
     if(!isHexString || id.length != 24)
      throw new NotFoundException("invalid Reservation ID");
   }
-  async findAll(req : any) : Promise<reservation[]> {
+  async findAll(req : any) : Promise<any[]> {
 
-    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+    if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Only Admin can get Access to This !!");
 
     const UserList = await this.gymService.getUserListByGym(req.user.gym);
-    const AllReservations = await this.reservationModel.find({User : {$in : UserList}}).exec();
-    let listReservations : reservation[] = [] ;
-    AllReservations.map(ReservationJson => {
-      listReservations.push(new reservation(ReservationJson));
-    });
+    const AllReservations = await this.reservationModel.find({User : {$in : UserList}});
+    const results = [];
+    for (const reservation of AllReservations) {
+      const Member = await this.userModel.findById(reservation.User);
+      const Equipment = await this.EquipmentModel.findById(reservation.Equipment);
 
-    return  listReservations;
+      if (Member && Equipment) {
+        const combinedData = {
+          ...reservation.toObject(),
+          MemberName: Member.firstName,
+          MemberLastName: Member.lastName,
+          EquipmentName : Equipment.Name,
+          EquipmentImage : Equipment.Image
+        };
+      results.push(combinedData);
+    }
+  }
+    return  results;
   }
 
   async findOne(id: string,req : any) : Promise<reservation> {

@@ -35,7 +35,6 @@ export class UsersService {
     else if(CurrentUser.Role === Role.MEMBER) current = new member(CurrentUser);
     else if(CurrentUser.Role === Role.TRAINER)  current = new trainer(CurrentUser);
 
-
     const userEmail = await this.userModel.findOne({Email : CurrentUser.Email});
     const userPhone = await this.userModel.findOne({Phone : CurrentUser.Phone});
     this.verifValidId(req.user.gym);

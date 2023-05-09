@@ -3,11 +3,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
 import { CourseService } from 'src/course/course.service';
+import { course } from 'src/course/Model/course.model';
 import { EquipmentService } from 'src/equipment/equipment.service';
 import { GymService } from 'src/gym/gym.service';
 import { reservation } from 'src/reservation/Model/reservation.model';
+import { Course, CourseDocument } from 'src/Schemas/course.models';
 import { Registration, RegistrationDocument } from 'src/Schemas/Registration.models';
-import { Role } from 'src/Schemas/users.models';
+import { Person, Role, UserDocument } from 'src/Schemas/users.models';
 import { UsersService } from 'src/users/users.service';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { UpdateRegistrationDto } from './dto/update-registration.dto';
@@ -20,7 +22,10 @@ export class RegistrationService {
     @InjectModel(Registration.name) private registrationModel : Model<RegistrationDocument>,
     @Inject(CourseService) private  courseService : CourseService,
     @Inject(UsersService) private  usersService : UsersService,
-    @Inject(GymService) private  gymService : GymService
+    @Inject(GymService) private  gymService : GymService,
+    @InjectModel(Course.name) private CourseModel : Model<CourseDocument>,
+    @InjectModel(Person.name) private userModel : Model<UserDocument>, 
+
   ){}
 
   async Join(createRegistrationDto: CreateRegistrationDto,req : any) : Promise<any> {
@@ -50,18 +55,30 @@ export class RegistrationService {
      throw new NotFoundException("invalid Registration ID");
   }
 
-  async findAll(req : any) : Promise<registration[]> {
+  async findAll(req : any) : Promise<any[]> {
 
     if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
 
     const UserList = await this.gymService.getUserListByGym(req.user.gym);
 
     const AllRegistration = await this.registrationModel.find({Member : {$in : UserList}}).exec();
-    let listRegistrations : registration[] = [] ;
-    AllRegistration.map(RegistreJson => {  
-      listRegistrations.push(new registration(RegistreJson));
-    });
-    return  listRegistrations;
+    const results = [];
+
+      for (const registration of AllRegistration) {
+      const Member = await this.userModel.findById(registration.Member);
+      const course = await this.CourseModel.findById(registration.Course);
+
+      if (Member && course) {
+      const combinedData = {
+        ...registration.toObject(),
+        MemberName: Member.firstName,
+        MemberLastname: Member.lastName,
+        CourseName : course.Name
+      };
+      results.push(combinedData);
+    }
+    }
+    return results;
   }
 
   async findOne(id: string, req : any) : Promise<registration> {

@@ -6,10 +6,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { EquipmentModule } from 'src/equipment/equipment.module';
 import { UsersModule } from 'src/users/users.module';
 import { GymModule } from 'src/gym/gym.module';
+import { Equipment, EquipmentSchema } from 'src/Schemas/equipment.models';
+import { Person, UserSchema } from 'src/Schemas/users.models';
 
 @Module({
   imports : [
     MongooseModule.forFeature([{name : Reservation.name, schema:ReservationSchema}]),
+    MongooseModule.forFeature([{name : Equipment.name, schema:EquipmentSchema}]),
+    MongooseModule.forFeature([{name : Person.name, schema:UserSchema}]),
     EquipmentModule,
     UsersModule,
     GymModule

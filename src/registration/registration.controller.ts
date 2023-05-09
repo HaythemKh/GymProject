@@ -17,7 +17,7 @@ export class RegistrationController {
 
   @UseGuards(AuthGuard("jwt"))
   @Get("AllRegistration")
-  async findAll(@Request() req : any) : Promise<registration[]> {
+  async findAll(@Request() req : any) : Promise<any[]> {
     return await this.registrationService.findAll(req);
   }
  
