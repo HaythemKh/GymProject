@@ -19,10 +19,7 @@ export class CreateRegistrationDto {
     IsActive : Boolean;
 
     @IsNotEmpty()
-    @IsNumberString()
+    @IsNumber()
     Duration : number;
 
-    @IsNotEmpty()
-    @IsNumberString()
-    Price : number;
 }

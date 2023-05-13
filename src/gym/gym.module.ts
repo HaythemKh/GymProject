@@ -8,6 +8,8 @@ import { Subscription, SubscriptionSchema } from 'src/Schemas/subscription.model
 import { GymConfigModule } from 'src/gym-config/gym-config.module';
 import { Equipment, EquipmentSchema } from 'src/Schemas/equipment.models';
 import { Course, CourseSchema } from 'src/Schemas/course.models';
+import { SubsMembership, SubsMembershipSchema } from 'src/Schemas/subsmembership.models';
+import { Registration, RegistrationSchema } from 'src/Schemas/Registration.models';
 
 @Module({
   imports : [
@@ -16,6 +18,8 @@ import { Course, CourseSchema } from 'src/Schemas/course.models';
     MongooseModule.forFeature([{name : Subscription.name, schema:SubscriptionSchema}]),
     MongooseModule.forFeature([{name : Equipment.name, schema:EquipmentSchema}]),
     MongooseModule.forFeature([{name : Course.name, schema:CourseSchema}]),
+    MongooseModule.forFeature([{name : SubsMembership.name, schema:SubsMembershipSchema}]),
+    MongooseModule.forFeature([{name : Registration.name, schema:RegistrationSchema}]),
     GymConfigModule
   ],
   controllers: [GymController],

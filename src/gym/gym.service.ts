@@ -7,7 +7,9 @@ import { GymConfigService } from 'src/gym-config/gym-config.service';
 import { Course, CourseDocument } from 'src/Schemas/course.models';
 import { Equipment, EquipmentDocument } from 'src/Schemas/equipment.models';
 import { Gym, GymDocument } from 'src/Schemas/gym.models';
+import { Registration, RegistrationDocument } from 'src/Schemas/Registration.models';
 import { Subscription, SubscriptionDocument } from 'src/Schemas/subscription.models';
+import { SubsMembership, SubsMembershipDocument } from 'src/Schemas/subsmembership.models';
 import { Person, Role, UserDocument } from 'src/Schemas/users.models';
 import { CreateGymDto } from './dto/create-gym.dto';
 import { UpdateGymDto } from './dto/update-gym.dto';
@@ -23,6 +25,8 @@ export class GymService {
     @InjectModel(Equipment.name) private equipmentModel : Model<EquipmentDocument>,
     @Inject(GymConfigService) private  gymConfigService : GymConfigService,
     @InjectModel(Course.name) private courseModel : Model<CourseDocument>,
+    @InjectModel(SubsMembership.name) private subsMembershipModel : Model<SubsMembershipDocument>,
+    @InjectModel(Registration.name) private registrationModel : Model<RegistrationDocument>,
   ){}
   
   async create(createGymDto: CreateGymDto, req :any) : Promise<any> {
@@ -187,5 +191,58 @@ export class GymService {
     const currrentGym = await this.gymModel.findOne({_id: gym}).exec();
     const myList = currrentGym.users;
     return myList;
+  }
+
+
+  async AllStatistics(req : any) : Promise<any>
+  {
+    const UserList = await this.getUserListByGym(req.user.gym);
+
+    const AllMemberships = await this.subsMembershipModel.find({Member : {$in : UserList}}).exec();
+
+    let TotalMembersSubscriptionsPrice = 0;
+    let TotalMembersRegistrationsCoursePrice = 0;
+    let RevenueCoursesByPreviousMonth = 0;
+    let RevenueSubscriptionsByPreviousMonth = 0;
+    let TotalRevenue = 0;
+
+    const now = new Date();
+    const MonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    for(const revenueMembership of AllMemberships)
+    {
+      TotalMembersSubscriptionsPrice += revenueMembership.Price;
+    }
+    const AllRegistration = await this.registrationModel.find({Member : {$in : UserList}}).exec();
+    for (const revenueCourse of AllRegistration)
+    {
+      const priceCourse = await this.courseModel.findOne({_id : revenueCourse.Course});
+      TotalMembersRegistrationsCoursePrice += priceCourse.PricePerMonth;
+    }
+
+    TotalRevenue = TotalMembersRegistrationsCoursePrice + TotalMembersSubscriptionsPrice;
+    
+    const RegistrationMonthAgo = await this.registrationModel.find({Member : {$in : UserList},createdAt : {$gte: MonthAgo, $lte : now}})
+    for(const LastMonthCourses of RegistrationMonthAgo)
+    {
+      const priceCourse = await this.courseModel.findOne({_id : LastMonthCourses.Course});
+      RevenueCoursesByPreviousMonth += priceCourse.PricePerMonth;
+    }
+
+    const SubscriptionsMembership = await this.subsMembershipModel.find({Member : {$in : UserList},createdAt : {$gte: MonthAgo, $lte : now}}).exec();
+    for(const LastMonthSubscriptions of SubscriptionsMembership)
+    {
+      RevenueSubscriptionsByPreviousMonth += LastMonthSubscriptions.Price;
+    }
+
+    return {
+      TotalMembersSubscriptionsPrice,
+      TotalMembersRegistrationsCoursePrice,
+      RevenueCoursesByPreviousMonth,
+      RevenueSubscriptionsByPreviousMonth,
+      TotalRevenue
+    }
+
+    
   }
 }

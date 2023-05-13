@@ -35,4 +35,11 @@ export class GymController {
   async remove(@Param('id') id: string) : Promise<any> {
     return await this.gymService.remove(id);
   }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("/Statistics")
+  async AllStatistics(@Request() req : any)
+  {
+    return await this.gymService.AllStatistics(req);
+  }
 }

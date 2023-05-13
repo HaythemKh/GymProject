@@ -57,6 +57,9 @@ export class Person {
     @Prop({ required: true, enum: Role})
     Role: Role;
 
+    @Prop({required:false,immutable : true, default : Date.now})
+    createdAt : Date;
+
     
 }
 function formatDate(date: Date) {

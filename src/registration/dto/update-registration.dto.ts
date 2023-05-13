@@ -24,7 +24,4 @@ export class UpdateRegistrationDto{
     @IsNumber()
     Duration : number;
 
-    @IsNotEmpty()
-    @IsNumber()
-    Price : number;
 }
