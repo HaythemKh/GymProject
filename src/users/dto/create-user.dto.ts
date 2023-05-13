@@ -62,3 +62,13 @@ export class CreateUserDto {
     @IsNotEmpty()
     Role: Role;
 }
+
+export class SendEmailDto {
+    @IsEmail()
+    email: string;
+  }
+  
+  export class ResetPasswordDto {
+    @IsString()
+    newPassword: string;
+  }

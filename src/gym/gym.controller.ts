@@ -38,8 +38,15 @@ export class GymController {
 
   @UseGuards(AuthGuard("jwt"))
   @Get("/Statistics")
-  async AllStatistics(@Request() req : any)
+  async AllStatistics(@Request() req : any) : Promise<any[]>
   {
     return await this.gymService.AllStatistics(req);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("/Statistics/Chart")
+  async AllStatisticsChart(@Request() req : any) : Promise<any[]>
+  {
+    return await this.gymService.AllStatisticsChart(req);
   }
 }

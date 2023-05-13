@@ -60,6 +60,12 @@ export class Person {
     @Prop({required:false,immutable : true, default : Date.now})
     createdAt : Date;
 
+    @Prop({required:false})
+    resetPasswordToken: string;
+
+    @Prop({required:false})
+    resetPasswordExpires: Date;
+
     
 }
 function formatDate(date: Date) {

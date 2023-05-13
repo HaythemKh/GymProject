@@ -202,5 +202,13 @@ export class UsersService {
    }
 }
 
+async findByEmail(email: string): Promise<Person | null> {
+  return this.userModel.findOne({ email }).exec();
+}
+
+async findByResetPasswordToken(token: string): Promise<Person | null> {
+  return this.userModel.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: new Date() } }).exec();
+}
+
 
 }
