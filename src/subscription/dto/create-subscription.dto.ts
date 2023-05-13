@@ -1,5 +1,5 @@
 import { Exclude } from "class-transformer";
-import {  IsNotEmpty, IsNumber, IsNumberString, IsString } from "class-validator";
+import {  IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class CreateSubscriptionDto {
     
@@ -18,7 +18,7 @@ export class CreateSubscriptionDto {
     @IsNumber()
     PricePerMonth : number;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     Gym : string;
 }

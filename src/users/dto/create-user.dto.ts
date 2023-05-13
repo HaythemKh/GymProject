@@ -37,12 +37,10 @@ export class CreateUserDto {
     @IsString()
     Address : string;
 
-
     @IsPhoneNumber('TN')
     @IsNotEmpty()
     @IsString()
     Phone : string;
-
     
     @IsNumber()
     @IsNotEmpty()
