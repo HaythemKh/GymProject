@@ -39,4 +39,10 @@ export class ReservationController {
   async remove(@Param('id') id: string,@Request() req : any) : Promise<any> {
     return await this.reservationService.remove(id,req);
   }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("Member/MyReservations")
+  async MyReservations(@Request() req : any) :Promise<reservation[]>{
+    return await this.reservationService.MyReservations(req);
+  }
 }

@@ -4,6 +4,7 @@ import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
 import { GymService } from 'src/gym/gym.service';
 import { Course, CourseDocument } from 'src/Schemas/course.models';
+import { Registration, RegistrationDocument } from 'src/Schemas/Registration.models';
 import { Person, Role, UserDocument } from 'src/Schemas/users.models';
 import { UsersModule } from 'src/users/users.module';
 import { UsersService } from 'src/users/users.service';
@@ -18,8 +19,8 @@ export class CourseService {
     @InjectModel(Course.name) private CourseModel : Model<CourseDocument>,
     @Inject(GymService) private  gymService : GymService,
     @Inject(UsersService) private  userService : UsersService,
-    @InjectModel(Person.name) private userModel : Model<UserDocument>, 
-
+    @InjectModel(Person.name) private userModel : Model<UserDocument>,
+    @InjectModel(Registration.name) private registrationModel : Model<RegistrationDocument>,
   ){}
 
 
@@ -86,7 +87,7 @@ export class CourseService {
   }
 
   async findOne(id: string,req : any) :Promise<course> {
-    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+    if(req.user.role !== Role.ADMIN || req.user.role !==Role.MEMBER) throw new UnauthorizedException("You can't can get Access to This !!");
     this.verifValidId(id);
     const currrentCourse = await this.CourseModel.findOne({_id: id,Gym : req.user.gym}).exec();
     if(isEmpty(currrentCourse)) throw new NotFoundException("Course doesn't exist");
@@ -112,6 +113,7 @@ export class CourseService {
     else throw new NotFoundException("updating course denied");
   }
 
+
   async remove(id: string,req : any) : Promise<any> {
 
     if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
@@ -123,5 +125,29 @@ export class CourseService {
       return true;
     } 
     else throw new NotFoundException("Course doesn't exist");
+  }
+
+  async AvailableCourses(req : any) : Promise<course[]>{
+
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+
+    const AllCourses = await this.CourseModel.find({Gym : req.user.gym});
+    const results = [];
+
+      for (const course of AllCourses) {
+      const trainer = await this.userModel.findById(course.Trainer);
+      const VerifyJoinedCourse = await this.registrationModel.findOne({Member : req.user.sub, Course : course._id,IsActive : true});
+      
+      if (trainer) {
+      const combinedData = {
+        ...course.toObject(),
+        trainerName: trainer.firstName,
+        trainerLastname: trainer.lastName,
+      };
+      if(!VerifyJoinedCourse)
+      results.push(combinedData);
+    }
+  }
+    return  results;
   }
 }

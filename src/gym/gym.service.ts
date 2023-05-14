@@ -132,7 +132,6 @@ export class GymService {
   }
 
   async findOne(req: any) : Promise<gym> {
-    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
 
     const currrentGym = await this.gymModel.findOne({_id: req.user.gym}).exec();
     if(isEmpty(currrentGym)) throw new NotFoundException("gym doesn't exist");
@@ -192,6 +191,25 @@ export class GymService {
     const myList = currrentGym.users;
     return myList;
   }
+
+  async getCourseListByGym(gym : string) : Promise<string[]>{
+    const currrentGym = await this.gymModel.findOne({_id: gym}).exec();
+    const myList = currrentGym.courses;
+    return myList;
+  }
+
+  async getEquipmentListByGym(gym : string) : Promise<string[]>{
+    const currrentGym = await this.gymModel.findOne({_id: gym}).exec();
+    const myList = currrentGym.equipments;
+    return myList;
+  }
+
+  async getSubscriptionsListByGym(gym : string) : Promise<string[]>{
+    const currrentGym = await this.gymModel.findOne({_id: gym}).exec();
+    const myList = currrentGym.subscriptions;
+    return myList;
+  }
+
   async subscriptionsWeekAgo(users : string[]) : Promise<number>{
     const now = new Date();
     let revenue : number = 0;
@@ -335,7 +353,6 @@ export class GymService {
     return sum;
   }
 
-
   async AllStatistics(req : any) : Promise<any>
   {
     const UserList = await this.getUserListByGym(req.user.gym);
@@ -354,6 +371,10 @@ export class GymService {
     let RegistrationsWeekAgo : number = await this.RegistrationsWeekAgo(UserList);
     let subscriptionsWeekAgo : number = await this.subscriptionsWeekAgo(UserList);
     let TotalRevenuesGym : number = await this.TotalRevenuesGym(UserList);
+    let RevenueGymWeekAgo : number = await this.RevenuesGymWeekAgo(UserList);
+    let RevenueGym2WeekAgo : number = await this.RevenuesGym2WeekAgo(UserList);
+    let RevenueGym3WeekAgo : number = await this.RevenuesGym3WeekAgo(UserList);
+    let RevenueGymMonthAgo : number = await this.RevenuesGymMonthAgo(UserList);
 
     
     const MembersActiveSubscriptions = await this.subsMembershipModel.countDocuments({Member : {$in : UserList},IsActive : true})
@@ -371,7 +392,11 @@ export class GymService {
       subscriptionsWeekAgo,
       TotalActiveMembers,
       TotalInactiveMembers,
-      TotalRevenuesGym
+      TotalRevenuesGym,
+      RevenueGymWeekAgo,
+      RevenueGym2WeekAgo,
+      RevenueGym3WeekAgo,
+      RevenueGymMonthAgo
     }
   }
 

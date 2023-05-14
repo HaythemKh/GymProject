@@ -4,6 +4,7 @@ import { CreateSubsMembershipDto } from './dto/create-subs-membership.dto';
 import { UpdateSubsMembershipDto } from './dto/update-subs-membership.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { subsmembership } from './Model/subsmembership.model';
+import { subscription } from 'src/subscription/Model/subscription.model';
 
 @Controller('subsMembership')
 export class SubsMembershipController {
@@ -37,5 +38,11 @@ export class SubsMembershipController {
   @Delete(':id')
   async remove(@Param('id') id: string,@Request() req : any) :Promise<any> {
     return await this.subsMembershipService.remove(id,req);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("/Member/MyPreviousSubscriptions")
+  async MySubscriptions(@Request() req : any) : Promise<subsmembership[]>{
+    return await this.subsMembershipService.PreviousSubscriptions(req);
   }
 }

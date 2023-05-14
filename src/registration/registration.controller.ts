@@ -38,4 +38,10 @@ export class RegistrationController {
   async remove(@Param('id') id: string, @Request() req : any) : Promise<any> {
     return await this.registrationService.remove(id,req);
   }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("Member/MyPreviousRegistrations")
+  async myRegistrations(@Request() req : any) : Promise<registration[]>{
+    return await this.registrationService.MyPreviousRegistrations(req);
+  }
 }

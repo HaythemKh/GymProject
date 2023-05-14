@@ -1,6 +1,7 @@
 import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isEmpty } from 'class-validator';
+import { addDays } from 'date-fns';
 import { Model } from 'mongoose';
 import { CourseService } from 'src/course/course.service';
 import { GymService } from 'src/gym/gym.service';
@@ -35,9 +36,13 @@ export class SubsMembershipService {
     this.verifValidId(createSubsMembershipDto.Subscription);
     createSubsMembershipDto.Member = req.user.sub;
 
+    const SubsList = await this.gymService.getSubscriptionsListByGym(req.user.gym);
+
     const verif = await this.subsMembershipModel.findOne({Member : req.user.sub,Subscription :createSubsMembershipDto.Subscription });
     if(verif) throw new BadRequestException("You are already subscribed to this Subscription");
     const Register = new subsmembership(createSubsMembershipDto);
+    const Member = await this.subsMembershipModel.countDocuments({Member : req.user.sub,Subscription : {$in : SubsList},IsActive : true});
+    if(Member !== 0) throw new BadRequestException("You already subscribed to another subscription");
     const created = await this.subsMembershipModel.create(Register);
     if(!created) throw new BadRequestException("there is a problem in the creation of the subsMembership")
     return "subsMembership created successfully";
@@ -114,5 +119,39 @@ export class SubsMembershipService {
       return {"message" : "subsMembership deleted successfully"};
     } 
     else throw new NotFoundException("subsMembership doesn't exist");
+  }
+
+  getExpirationDate(createdDate : Date, Duration : number): Date {
+    const expirationDate = addDays(createdDate, Duration);
+    return expirationDate;
+  }
+
+  async PreviousSubscriptions(req : any) : Promise<subsmembership[]>{
+    if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Only Members can get Access to This !!");
+    
+    const SubscriptionsList = await this.gymService.getSubscriptionsListByGym(req.user.gym);
+
+    const AllMemberships = await this.subsMembershipModel.find({Member : req.user.sub,Subscription : {$in : SubscriptionsList}}).exec();
+    const results = [];
+
+    for (const subsUsers of AllMemberships)
+    {
+      const user = await this.userModel.findById(subsUsers.Member);
+      const subscription = await this.subscriptionModel.findById(subsUsers.Subscription);
+      const expirationDate = this.getExpirationDate(subsUsers.createdAt,subsUsers.Duration);
+
+      if (user && subscription) {
+        const combinedData = {
+          ...subsUsers.toObject(),
+          MemberName: user.firstName,
+          MemberLastName: user.lastName,
+          SubscriptionName : subscription.Name,
+          ExpireDate : expirationDate
+        };
+        results.push(combinedData);
+      }
+    }
+    return  results;
+
   }
 }

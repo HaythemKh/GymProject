@@ -14,6 +14,8 @@ import { UsersService } from 'src/users/users.service';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { UpdateRegistrationDto } from './dto/update-registration.dto';
 import { registration } from './Model/registration.model';
+import { addDays } from 'date-fns';
+
 
 @Injectable()
 export class RegistrationService {
@@ -67,13 +69,15 @@ export class RegistrationService {
       for (const registration of AllRegistration) {
       const Member = await this.userModel.findById(registration.Member);
       const course = await this.CourseModel.findById(registration.Course);
+      const expirationDate = this.getExpirationDate(registration.createdAt,registration.Duration);
 
       if (Member && course) {
       const combinedData = {
         ...registration.toObject(),
         MemberName: Member.firstName,
         MemberLastname: Member.lastName,
-        CourseName : course.Name
+        CourseName : course.Name,
+        ExpireDate : expirationDate
       };
       results.push(combinedData);
     }
@@ -91,7 +95,6 @@ export class RegistrationService {
     const Registration : registration = new registration(RegistrationModel);
     return  Registration;
   }
-
 
   async update(id: string, updateRegistrationDto: UpdateRegistrationDto,req : any) : Promise<any> {
     if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
@@ -122,5 +125,37 @@ export class RegistrationService {
       return {"message" : "Registration deleted successfully"};
     } 
     else throw new NotFoundException("Registration doesn't exist");
+  }
+
+  getExpirationDate(createdDate : Date, Duration : number): Date {
+    const expirationDate = addDays(createdDate, Duration);
+    return expirationDate;
+  }
+
+  async MyPreviousRegistrations(req : any) : Promise<registration[]>{
+
+    if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Only Members can get Access to This !!");
+
+    const CourseList = await this.gymService.getCourseListByGym(req.user.gym);
+
+    const AllRegistration = await this.registrationModel.find({Member : req.user.sub,Course :{$in : CourseList}}).exec();
+    const results = [];
+
+      for (const registration of AllRegistration) {
+      const Member = await this.userModel.findById(registration.Member);
+      const course = await this.CourseModel.findById(registration.Course);
+      const expirationDate = this.getExpirationDate(registration.createdAt,registration.Duration);
+      if (Member && course) {
+      const combinedData = {
+        ...registration.toObject(),
+        MemberName: Member.firstName,
+        MemberLastname: Member.lastName,
+        CourseName : course.Name,
+        ExpireDate : expirationDate
+      };
+      results.push(combinedData);
+    }
+    }
+    return results;
   }
 }

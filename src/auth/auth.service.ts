@@ -19,9 +19,19 @@ export class AuthService {
         // retrieve user
 
         const user = await this.userModel.findOne({Email : login.Email});
-        if (!user)  throw new UnauthorizedException("Credentials incorrect");
+        if (!user || user.Role !== Role.ADMIN)  throw new UnauthorizedException("Credentials incorrect");
         const passwordMatch = await bcrypt.compare(login.Password,user.Password);
         if (!passwordMatch) throw new UnauthorizedException("Invalid username or password");
+
+        return this.SignUser(user._id,user.Email,user.Role,user.Gym);
+    }
+
+    async signInUser(login : AuthDto) : Promise<any>{
+        const user = await this.userModel.findOne({Email : login.Email});
+        if(!user || (user.Role === Role.ADMIN))
+            throw new UnauthorizedException("Credentials incorrect");
+        const passwordMatch = await bcrypt.compare(login.Password,user.Password);
+        if(!passwordMatch) throw new UnauthorizedException("Invalid username or password");
 
         return this.SignUser(user._id,user.Email,user.Role,user.Gym);
     }

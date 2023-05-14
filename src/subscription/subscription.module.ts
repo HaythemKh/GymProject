@@ -4,11 +4,13 @@ import { SubscriptionController } from './subscription.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Subscription, SubscriptionSchema } from 'src/Schemas/subscription.models';
 import { GymModule } from 'src/gym/gym.module';
+import { SubsMembership, SubsMembershipSchema } from 'src/Schemas/subsmembership.models';
 
 @Module({
   imports : [
     MongooseModule.forFeature([{name : Subscription.name, schema:SubscriptionSchema}]),
     GymModule,
+    MongooseModule.forFeature([{name : SubsMembership.name, schema:SubsMembershipSchema}])
   ],
   controllers: [SubscriptionController],
   providers: [SubscriptionService],

@@ -10,4 +10,9 @@ export class AuthController {
   async signInLocal(@Body() login : AuthDto) : Promise<any>{
     return await this.authService.signInLocal(login);
   }
+
+  @Post("/signinUser")
+  async signInUserMobile(@Body() login : AuthDto) : Promise<any>{
+    return await this.authService.signInUser(login);
+  }
 }

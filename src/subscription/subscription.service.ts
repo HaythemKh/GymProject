@@ -2,9 +2,12 @@ import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@n
 import { InjectModel } from '@nestjs/mongoose';
 import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
+import { course } from 'src/course/Model/course.model';
 import { GymService } from 'src/gym/gym.service';
 import { Subscription, SubscriptionDocument } from 'src/Schemas/subscription.models';
+import { SubsMembership, SubsMembershipDocument } from 'src/Schemas/subsmembership.models';
 import { Role } from 'src/Schemas/users.models';
+import { trainer } from 'src/users/Models/trainer.model';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { subscription } from './Model/subscription.model';
@@ -14,7 +17,8 @@ export class SubscriptionService {
 
   constructor(
     @InjectModel(Subscription.name) private subscriptionModel : Model<SubscriptionDocument>,
-    @Inject(GymService) private  gymService : GymService
+    @Inject(GymService) private  gymService : GymService,
+    @InjectModel(SubsMembership.name) private subsMembershipModel : Model<SubsMembershipDocument>,
   ){}
 
   async create(createSubscriptionDto: CreateSubscriptionDto,req :any) : Promise<any> {
@@ -95,4 +99,22 @@ export class SubscriptionService {
     } 
     else throw new NotFoundException("subscription doesn't exist");
   }
+
+  async AvailableSubscriptions(req : any) : Promise<subscription[]>{
+
+    if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Only Members can get Access to This !!");
+
+    const AllSubscriptions = await this.subscriptionModel.find({Gym : req.user.gym});
+    const results = [];
+
+      for (const subscription of AllSubscriptions) {
+      const VerifyMembershipSubscription = await this.subsMembershipModel.findOne({Member : req.user.sub, Subscription : subscription._id,IsActive : true});
+      if(!VerifyMembershipSubscription)
+      results.push(subscription);
+      }
+      return  results;
+  }
+    
 }
+  
+

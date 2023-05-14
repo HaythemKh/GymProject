@@ -123,9 +123,9 @@ export class UsersService {
    {
      let user : User;
 
-     if(currrentUser["Role"] == "trainer") user = new trainer(currrentUser);
-     if(currrentUser["Role"] == "member") user = new member(currrentUser);
-     if(currrentUser["Role"] == "admin") user = new admin(currrentUser);
+     if(currrentUser.Role === Role.TRAINER) user = new trainer(currrentUser);
+     if(currrentUser.Role === Role.MEMBER) user = new member(currrentUser);
+     if(currrentUser.Role === Role.ADMIN) user = new admin(currrentUser);
 
      return user;
    }
@@ -194,9 +194,9 @@ export class UsersService {
    {
      let user : User;
     
-     if(currrentUser["Role"] == "trainer") user = new trainer(currrentUser);
-     if(currrentUser["Role"] == "member") user = new member(currrentUser);
-     if(currrentUser["Role"] == "admin") user = new admin(currrentUser);
+     if(currrentUser.Role === Role.TRAINER) user = new trainer(currrentUser);
+     if(currrentUser.Role === Role.MEMBER) user = new member(currrentUser);
+     if(currrentUser.Role === Role.ADMIN) user = new admin(currrentUser);
 
      return user;
    }

@@ -36,4 +36,11 @@ export class CourseController {
   async remove(@Param('id') id: string,@Request() req:any) :Promise<any> {
     return await this.courseService.remove(id,req);
   }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("AllCoursesAvailable")
+  async AvailableCourses(@Request() req:any) :Promise<course[]>{
+    return await this.courseService.AvailableCourses(req);
+  }
+
 }

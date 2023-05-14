@@ -38,4 +38,11 @@ export class EquipmentController {
   async remove(@Param('id') id: string,@Request() req : any) : Promise<any> {
     return this.equipmentService.remove(id,req);
   }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("/AllAvailableEquipments")
+  async AllEquipmentAvailable(@Request() req:any) : Promise<equipment[]>
+  {
+    return this.equipmentService.AvailableEquipment(req);
+  }
 }

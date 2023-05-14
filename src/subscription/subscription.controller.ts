@@ -37,4 +37,10 @@ export class SubscriptionController {
   async remove(@Param('id') id: string,@Request() req:any) : Promise<any> {
     return await this.subscriptionService.remove(id,req);
   }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("Member/MyPreviousSubscriptions")
+  async MyRegistrations(@Request() req : any) : Promise<subscription[]>{
+    return await this.subscriptionService.AvailableSubscriptions(req);
+  }
 }

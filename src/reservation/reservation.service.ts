@@ -93,7 +93,7 @@ export class ReservationService {
   }
   async findAll(req : any) : Promise<any[]> {
 
-    if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Only Admin can get Access to This !!");
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
 
     const UserList = await this.gymService.getUserListByGym(req.user.gym);
     const AllReservations = await this.reservationModel.find({User : {$in : UserList}});
@@ -146,5 +146,31 @@ export class ReservationService {
       return {"message" : "Reservation deleted successfully"};
     } 
     else throw new NotFoundException("Reservation doesn't exist");
+  }
+
+
+  async MyReservations(req : any) : Promise<reservation[]>{
+    if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Only Members can get Access to This !!");
+    
+    const EquipmentList = await this.gymService.getEquipmentListByGym(req.user.gym);
+
+    const AllReservations = await this.reservationModel.find({User : req.user.sub,Equipment : {$in : EquipmentList}});
+    const results = [];
+    for (const reservation of AllReservations) {
+      const Member = await this.userModel.findById(reservation.User);
+      const Equipment = await this.EquipmentModel.findById(reservation.Equipment);
+
+      if (Member && Equipment) {
+        const combinedData = {
+          ...reservation.toObject(),
+          MemberName: Member.firstName,
+          MemberLastName: Member.lastName,
+          EquipmentName : Equipment.Name,
+          EquipmentImage : Equipment.Image
+        };
+      results.push(combinedData);
+    }
+  }
+    return  results;
   }
 }

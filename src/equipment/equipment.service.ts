@@ -61,7 +61,7 @@ export class EquipmentService {
 
   async findOne(id: string,req : any) :Promise<equipment> {
 
-    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+    if(req.user.role !== Role.ADMIN || req.user.role !== Role.MEMBER) throw new UnauthorizedException("you can't get Access to This !!");
 
     this.verifValidId(id);
     const currrentEquip = await this.EquipmentModel.findOne({_id: id,Gym : req.user.gym}).exec();
@@ -121,5 +121,17 @@ export class EquipmentService {
       return true;
     } 
     else throw new NotFoundException("Equipment doesn't exist");
+  }
+
+  async AvailableEquipment(req : any) : Promise<equipment[]>{
+    if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Only Members can get Access to This !!");
+    
+    const AllEquipments = await this.EquipmentModel.find({Gym : req.user.gym,Availability : true}).exec();
+    let listEquipments : equipment[] = [] ;
+    AllEquipments.map(EquipmentJson => {
+      listEquipments.push(new equipment(EquipmentJson));
+    });
+
+    return  listEquipments;
   }
 }
