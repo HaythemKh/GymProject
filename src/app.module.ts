@@ -11,6 +11,7 @@ import { CourseModule } from './course/course.module';
 import { AuthModule } from './auth/auth.module';
 import { RegistrationModule } from './registration/registration.module';
 import { SubsMembershipModule } from './subs-membership/subs-membership.module';
+import { SendEmailModule } from './send-email/send-email.module';
 
 @Module({
   imports: [
@@ -25,9 +26,11 @@ import { SubsMembershipModule } from './subs-membership/subs-membership.module';
     CourseModule,
     AuthModule,
     RegistrationModule,
-    SubsMembershipModule
+    SubsMembershipModule,
+    SendEmailModule,
   ],
   controllers: [],
   providers: [],
+  exports : []
 })
 export class AppModule {}

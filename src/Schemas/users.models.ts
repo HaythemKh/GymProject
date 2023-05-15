@@ -65,7 +65,6 @@ export class Person {
 
     @Prop({required:false})
     resetPasswordExpires: Date;
-
     
 }
 function formatDate(date: Date) {

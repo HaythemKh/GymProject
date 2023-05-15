@@ -129,7 +129,7 @@ export class CourseService {
 
   async AvailableCourses(req : any) : Promise<course[]>{
 
-    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+    if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Only Members can get Access to This !!");
 
     const AllCourses = await this.CourseModel.find({Gym : req.user.gym});
     const results = [];

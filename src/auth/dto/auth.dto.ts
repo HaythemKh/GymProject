@@ -8,5 +8,17 @@ export class AuthDto {
 
     @IsString()
     Password : string;
-
 }
+
+    export class SendEmailDto {
+    @IsEmail()
+    email: string;
+    }
+  
+  export class ResetPasswordDto {
+
+    @IsString()
+    resetToken : string;
+    @IsString()
+    newPassword: string;
+  }

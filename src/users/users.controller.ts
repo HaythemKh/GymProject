@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards,Request } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, ResetPasswordDto, SendEmailDto } from './dto/create-user.dto';
+import { CreateUserDto} from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { admin } from './Models/admin.model';
 import { member } from './Models/member.model';

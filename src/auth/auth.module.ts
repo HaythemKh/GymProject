@@ -6,6 +6,7 @@ import { UsersModule } from 'src/users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Person, UserSchema } from 'src/Schemas/users.models';
 import { jwtStrategy } from './strategy/jwt.strategy';
+import { SendEmailModule } from 'src/send-email/send-email.module';
 
 @Module({
   imports : [
@@ -14,6 +15,7 @@ import { jwtStrategy } from './strategy/jwt.strategy';
     JwtModule.register({
       secret : 'super-secret',
     }),
+    SendEmailModule
   ],
   controllers: [AuthController],
   providers: [AuthService,jwtStrategy],
