@@ -3,6 +3,9 @@ import { AppModule } from './app.module';
 import * as cors from 'cors';
 import { ValidationPipe,ValidationError } from '@nestjs/common';
 import { ValidationException, ValidationFilter } from './util/filter.validation';
+import momentTimezone from 'moment-timezone';
+import { ConfigService } from '@nestjs/config';
+import moment from 'moment';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,9 +26,8 @@ async function bootstrap() {
   );
 
 
-
-
   app.use(cors());
+  
   const port = process.env.PORT;
   await app.listen(port);
 }

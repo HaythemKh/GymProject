@@ -14,17 +14,18 @@ export class SendEmailService {
         });
     }
 
-    async sendMail(to: string, subject: string, message: string) {
+    async sendMail(to: string, subject: string, message: string) : Promise<Boolean> {
+        try{
         const options = {
-          from: 'GymApp2023@gmail.com',
+          from: process.env.EMAIL_USER,
           to: to,
           subject: subject,
           html: message,
         };
-        const result = await this.transporter.sendMail(options);
-        return "Email sent"
-            
+        await this.transporter.sendMail(options);
+        return true;
         }catch (error){
-            throw new BadRequestException(`Email does not sent : ${error}`);
+            return false;
       }
+    }
 }

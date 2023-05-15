@@ -8,6 +8,8 @@ import { UsersService } from 'src/users/users.service';
 import { AuthDto, SendEmailDto } from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
 import { SendEmailService } from 'src/send-email/send-email.service';
+import * as moment from 'moment';
+
 
 @Injectable()
 export class AuthService {
@@ -55,39 +57,67 @@ export class AuthService {
         const user = await this.userModel.findOne({Email : email});
         if(!user) throw new NotFoundException("User not found");
 
-        const resetToken = Math.random().toString(36).substring(2,15) + Math.random().toString(36).substring(2,15);
+        const codeLength = 6; 
+        let verificationCode = '';
+        let codeCharacters : string = '0123456789'; 
+        let usedCodes : Set<string> = new Set(); 
+
+        do {
+        verificationCode = this.generateRandomCode(codeLength,codeCharacters);
+        } while (usedCodes.has(verificationCode));
+
+        usedCodes.add(verificationCode);
+
+        const now = new Date();
+        const expirationDate = new Date(); // Add 1 hour
+
+        console.log(expirationDate)
+  
         await this.userModel.updateOne(
             {Email : email,},
             {
             $set : {
-                resetPasswordToken : resetToken,
-                resetPasswordExpires : Date.now() + 3600000, // 1 Hour 
+                resetPasswordCode : verificationCode,
+                resetPasswordExpiresCode : expirationDate,
                 }
             }
         );
-        console.log(resetToken);
-        const resetCode = `https://example.com/reset-password/${resetToken}`;
+        console.log(verificationCode);
         const subject = 'Reset your password by verification code';
         const message = `
-            
-        <b>Use this code to verify your email address on GymApp</b>
-        Hello ${user.firstName},
+        <br><div style="font-size: 18px;background-color: #f5f5f5;border: 1px solid #e0e0e0; padding: 15px; border-radius: 4px;">
+        <p><b>Verification Code of your account in gymp</b></p>
+        <p>Hello ${user.firstName},<p>
 
-      You are receiving this email because you requested a password reset for your account.
+      <p>You are receiving this email because you requested a password reset for your account.</p>
 
-      This code can only be used once Please ignore this email if you did not request a code.
-      Never share this code with anyone else.
+      <p>This code can only be used once Please ignore this email if you did not request a code.
+      Never share this code with anyone else.</p>
 
-      <b>confirmation code</b>
+      <p><b>confirmation code</b></p>
 
-      <b>${resetCode}</>
-
-      Thanks,
-      The Gym Owner Team
+      <div style="background: linear-gradient(to bottom, #f2f2f2, #e6e6e6); border: 1px solid #ccc; padding: 15px; border-radius: 4px;">
+      <p style="font-size: 24px; font-weight: bold; margin: 0; text-align: center;">${verificationCode}</p>
+      </div>
+      <p>Thanks,</p>
+      <p>The Gym Support Team</p>
+      </div>
     `;
 
-    await this.sendMailService.sendMail(email, subject, message);
+    if(await this.sendMailService.sendMail(email, subject, message))
+        return {"Message" :'Email sent successfully'};
+        else
+        return {"Message" :'Email sending error'};
 
 
     }
+    generateRandomCode(codeLength : number,codeCharacters : string): string {
+        let code = '';
+        for (let i = 0; i < codeLength; i++) {
+          const randomIndex = Math.floor(Math.random() * codeCharacters.length);
+          code += codeCharacters[randomIndex];
+        }
+        return code;    
+    }
+ 
 }

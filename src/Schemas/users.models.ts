@@ -61,10 +61,10 @@ export class Person {
     createdAt : Date;
 
     @Prop({required:false})
-    resetPasswordToken: string;
+    resetPasswordCode: string;
 
     @Prop({required:false})
-    resetPasswordExpires: Date;
+    resetPasswordExpiresCode: Date;
     
 }
 function formatDate(date: Date) {
