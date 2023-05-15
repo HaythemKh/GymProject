@@ -66,18 +66,21 @@ export class AuthService {
             }
         );
         console.log(resetToken);
-        const resetUrl = `https://example.com/reset-password/${resetToken}`;
-        const subject = 'Reset your password';
+        const resetCode = `https://example.com/reset-password/${resetToken}`;
+        const subject = 'Reset your password by verification code';
         const message = `
-      Hi ${user.firstName},
+            
+        <b>Use this code to verify your email address on GymApp</b>
+        Hello ${user.firstName},
 
       You are receiving this email because you requested a password reset for your account.
 
-      Please click on the following link, or paste this into your browser to complete the process:
+      This code can only be used once Please ignore this email if you did not request a code.
+      Never share this code with anyone else.
 
-      ${resetUrl}
+      <b>confirmation code</b>
 
-      If you did not request this, please ignore this email and your password will remain unchanged.
+      <b>${resetCode}</>
 
       Thanks,
       The Gym Owner Team
