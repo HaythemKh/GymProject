@@ -31,8 +31,6 @@ export class ReservationService {
 
     if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Only Member can reservate a specific equipment !!");
 
-
-
     createReservationDto.User = req.user.sub;
 
     let reserve : reservation = new reservation(createReservationDto);

@@ -67,13 +67,15 @@ export class SubsMembershipService {
     {
       const user = await this.userModel.findById(subsUsers.Member);
       const subscription = await this.subscriptionModel.findById(subsUsers.Subscription);
+      const expirationDate = this.getExpirationDate(subsUsers.createdAt,subsUsers.Duration);
 
       if (user && subscription) {
         const combinedData = {
           ...subsUsers.toObject(),
           MemberName: user.firstName,
           MemberLastName: user.lastName,
-          SubscriptionName : subscription.Name
+          SubscriptionName : subscription.Name,
+          ExpireDate : expirationDate
         };
         results.push(combinedData);
       }
