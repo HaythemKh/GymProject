@@ -357,95 +357,117 @@ export class GymService {
   {
     const UserList = await this.getUserListByGym(req.user.gym);
 
-    const AllMemberships = await this.subsMembershipModel.find({Member : {$in : UserList}}).exec();
+const [
+  AllMemberships,
+  TotalRevenuesSubscriptions,
+  TotalRevenuesCourses,
+  RegistrationsMonthAgo,
+  subscriptionsMonthAgo,
+  RegistrationsWeekAgo,
+  subscriptionsWeekAgo,
+  TotalRevenuesGym,
+  RevenueGymWeekAgo,
+  RevenueGym2WeekAgo,
+  RevenueGym3WeekAgo,
+  RevenueGymMonthAgo,
+  MembersActiveSubscriptions,
+  MembersInActiveSubscriptions,
+] = await Promise.all([
+  this.subsMembershipModel.find({Member : {$in : UserList}}).exec(),
+  this.TotalRevenuesSubscriptions(UserList),
+  this.TotalRevenuesCourses(UserList),
+  this.RegistrationsMonthAgo(UserList),
+  this.subscriptionsMonthAgo(UserList),
+  this.RegistrationsWeekAgo(UserList),
+  this.subscriptionsWeekAgo(UserList),
+  this.TotalRevenuesGym(UserList),
+  this.RevenuesGymWeekAgo(UserList),
+  this.RevenuesGym2WeekAgo(UserList),
+  this.RevenuesGym3WeekAgo(UserList),
+  this.RevenuesGymMonthAgo(UserList),
+  this.subsMembershipModel.countDocuments({Member : {$in : UserList},IsActive : true}),
+  this.userModel.countDocuments({Role : Role.MEMBER})
+]);
 
-    let TotalRevenuesSubscriptions : number = await this.TotalRevenuesSubscriptions(UserList);
-    let TotalRevenuesCourses : number = await this.TotalRevenuesCourses(UserList);
-    
-    let TotalActiveMembers : number = 0;
-    let TotalInactiveMembers : number = 0;
+let TotalActiveMembers = MembersActiveSubscriptions;
+let TotalInactiveMembers = MembersInActiveSubscriptions - TotalActiveMembers;
 
-    let RegistrationsMonthAgo : number =  await this.RegistrationsMonthAgo(UserList);
-    let subscriptionsMonthAgo : number = await this.subscriptionsMonthAgo(UserList);
-
-    let RegistrationsWeekAgo : number = await this.RegistrationsWeekAgo(UserList);
-    let subscriptionsWeekAgo : number = await this.subscriptionsWeekAgo(UserList);
-    let TotalRevenuesGym : number = await this.TotalRevenuesGym(UserList);
-    let RevenueGymWeekAgo : number = await this.RevenuesGymWeekAgo(UserList);
-    let RevenueGym2WeekAgo : number = await this.RevenuesGym2WeekAgo(UserList);
-    let RevenueGym3WeekAgo : number = await this.RevenuesGym3WeekAgo(UserList);
-    let RevenueGymMonthAgo : number = await this.RevenuesGymMonthAgo(UserList);
-
-    
-    const MembersActiveSubscriptions = await this.subsMembershipModel.countDocuments({Member : {$in : UserList},IsActive : true})
-    const MembersInActiveSubscriptions = await this.userModel.countDocuments({Role : Role.MEMBER})
-      
-      TotalActiveMembers += MembersActiveSubscriptions;
-      TotalInactiveMembers += MembersInActiveSubscriptions - TotalActiveMembers;
-
-    return {
-      TotalRevenuesSubscriptions,
-      TotalRevenuesCourses,
-      RegistrationsMonthAgo,
-      subscriptionsMonthAgo,
-      RegistrationsWeekAgo,
-      subscriptionsWeekAgo,
-      TotalActiveMembers,
-      TotalInactiveMembers,
-      TotalRevenuesGym,
-      RevenueGymWeekAgo,
-      RevenueGym2WeekAgo,
-      RevenueGym3WeekAgo,
-      RevenueGymMonthAgo
-    }
+return {
+  TotalRevenuesSubscriptions,
+  TotalRevenuesCourses,
+  RegistrationsMonthAgo,
+  subscriptionsMonthAgo,
+  RegistrationsWeekAgo,
+  subscriptionsWeekAgo,
+  TotalActiveMembers,
+  TotalInactiveMembers,
+  TotalRevenuesGym,
+  RevenueGymWeekAgo,
+  RevenueGym2WeekAgo,
+  RevenueGym3WeekAgo,
+  RevenueGymMonthAgo
+}
   }
 
   async AllStatisticsChart(req : any) : Promise<any[]>
   {
     const UserList = await this.getUserListByGym(req.user.gym);
 
-    let RevenueSubscriptionPerWeek = await this.subscriptionsWeekAgo(UserList);
-    let RevenueSubscriptionPer2Week = await this.subscriptions2WeekAgo(UserList);
-    let RevenueSubscriptionPer3Week = await this.subscriptions3WeekAgo(UserList);
-    let RevenueSubscriptionPerMonth = await this.subscriptionsMonthAgo(UserList);
+const [
+  RevenueSubscriptionPerWeek,
+  RevenueSubscriptionPer2Week,
+  RevenueSubscriptionPer3Week,
+  RevenueSubscriptionPerMonth,
+  RevenueCoursesPerWeek,
+  RevenueCoursesPer2Week,
+  RevenueCoursesPer3Week,
+  RevenueCoursesPerMonth,
+  RevenueGymPerWeek,
+  RevenueGymPer2Week,
+  RevenueGymPer3Week,
+  RevenueGymPerMonth,
+] = await Promise.all([
+  this.subscriptionsWeekAgo(UserList),
+  this.subscriptions2WeekAgo(UserList),
+  this.subscriptions3WeekAgo(UserList),
+  this.subscriptionsMonthAgo(UserList),
+  this.RegistrationsWeekAgo(UserList),
+  this.Registrations2WeekAgo(UserList),
+  this.Registrations3WeekAgo(UserList),
+  this.RegistrationsMonthAgo(UserList),
+  this.RevenuesGymWeekAgo(UserList),
+  this.RevenuesGym2WeekAgo(UserList),
+  this.RevenuesGym3WeekAgo(UserList),
+  this.RevenuesGymMonthAgo(UserList),
+]);
 
-    let RevenueCoursesPerWeek = await this.RegistrationsWeekAgo(UserList);
-    let RevenueCoursesPer2Week = await this.Registrations2WeekAgo(UserList);
-    let RevenueCoursesPer3Week = await this.Registrations3WeekAgo(UserList);
-    let RevenueCoursesPerMonth = await this.RegistrationsMonthAgo(UserList);
+const StatisticsCharts = [
+  {
+    Time: "1 Week Ago",
+    SubscriptionsMembers: RevenueSubscriptionPerWeek,
+    CoursesMembers: RevenueCoursesPerWeek,
+    RevenueGym: RevenueGymPerWeek,
+  },
+  {
+    Time: "2 Weeks Ago",
+    SubscriptionsMembers: RevenueSubscriptionPer2Week,
+    CoursesMembers: RevenueCoursesPer2Week,
+    RevenueGym: RevenueGymPer2Week,
+  },
+  {
+    Time: "3 Weeks Ago",
+    SubscriptionsMembers: RevenueSubscriptionPer3Week,
+    CoursesMembers: RevenueCoursesPer3Week,
+    RevenueGym: RevenueGymPer3Week,
+  },
+  {
+    Time: "1 Month Ago",
+    SubscriptionsMembers: RevenueSubscriptionPerMonth,
+    CoursesMembers: RevenueCoursesPerMonth,
+    RevenueGym: RevenueGymPerMonth,
+  },
+];
 
-    let RevenueGymPerWeek = await this.RevenuesGymWeekAgo(UserList);
-    let RevenueGymPer2Week = await this.RevenuesGym2WeekAgo(UserList);
-    let RevenueGymPer3Week = await this.RevenuesGym3WeekAgo(UserList);
-    let RevenueGymPerMonth = await this.RevenuesGymMonthAgo(UserList);
-
-    let StatisticsCharts  : any[] = [
-      {
-        "Time" : "1 Week Ago",
-        "SubscriptionsMembers" : RevenueSubscriptionPerWeek,
-        "CoursesMembers" : RevenueCoursesPerWeek,
-        "RevenueGym" : RevenueGymPerWeek
-      },
-      {
-        "Time" : "2 Weeks Ago",
-        "SubscriptionsMembers" : RevenueSubscriptionPer2Week,
-        "CoursesMembers" : RevenueCoursesPer2Week,
-        "RevenueGym" : RevenueGymPer2Week
-      },
-      {
-        "Time" : "3 Weeks Ago",
-        "SubscriptionsMembers" : RevenueSubscriptionPer3Week,
-        "CoursesMembers" : RevenueCoursesPer3Week,
-        "RevenueGym" : RevenueGymPer3Week
-      },
-      {
-        "Time" : "1 Month Ago",
-        "SubscriptionsMembers" : RevenueSubscriptionPerMonth,
-        "CoursesMembers" : RevenueCoursesPerMonth,
-        "RevenueGym" : RevenueGymPerMonth
-      }
-    ]
-
-    return StatisticsCharts;
+return StatisticsCharts;
   }
 }
