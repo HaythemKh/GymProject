@@ -52,12 +52,12 @@ export class GymService {
     throw new NotFoundException("Email already reserved to another gym ");
     
     const ConfigId = await this.gymConfigService.create(createConfig);
-    createGymDto.gymConfig = ConfigId;
-    const newGym = new gym(createGymDto);
+    // createGymDto.gymConfig = ConfigId;
+    // const newGym = new gym(createGymDto);
 
-    const createdGym = await this.gymModel.create(newGym);
-    if(createdGym)
-    return {"message" : "gym created successfully"};
+    // const createdGym = await this.gymModel.create(newGym);
+    // if(createdGym)
+    // return {"message" : "gym created successfully"};
   }
 
 
@@ -74,8 +74,6 @@ export class GymService {
     if(!verifGym) return  false;
     return true;
   }
-
-
 
   async userExistsInList(userId: string, gymId: string): Promise<boolean> {
     const list = await this.gymModel.findOne({ _id: gymId, users: { $in: [userId] } });

@@ -9,6 +9,7 @@ import { GymModule } from 'src/gym/gym.module';
 import { Equipment, EquipmentSchema } from 'src/Schemas/equipment.models';
 import { Person, UserSchema } from 'src/Schemas/users.models';
 import { GymConfigModule } from 'src/gym-config/gym-config.module';
+import { SubsMembershipModule } from 'src/subs-membership/subs-membership.module';
 
 @Module({
   imports : [
@@ -19,6 +20,7 @@ import { GymConfigModule } from 'src/gym-config/gym-config.module';
     UsersModule,
     GymModule,
     GymConfigModule,
+    SubsMembershipModule
   ],
   controllers: [ReservationController],
   providers: [ReservationService],

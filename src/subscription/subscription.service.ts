@@ -56,7 +56,6 @@ export class SubscriptionService {
      throw new NotFoundException("invalid ID");
   }
 
-
   async findOne(id: string,req : any) : Promise<any> {
 
     if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");

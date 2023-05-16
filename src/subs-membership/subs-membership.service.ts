@@ -48,6 +48,11 @@ export class SubsMembershipService {
     return "subsMembership created successfully";
   }
 
+  IsSubscribed(id : string) : boolean{
+    const currrentEquip =  this.subsMembershipModel.findOne({_id: id,IsActive : true}).exec();
+    return !isEmpty(currrentEquip);
+  }
+
   verifValidId(id: string){
     const isHexString = /^[0-9a-fA-F]+$/.test(id);
     if(!isHexString || id.length != 24)

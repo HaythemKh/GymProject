@@ -22,13 +22,13 @@ export class GymConfigService {
       console.log(createGymConfigDto)
       const NewConfig = new gymConfig(createGymConfigDto);
 
-      console.log(NewConfig)
+      console.log(NewConfig.ClosingTime)
   
-      const created = await this.gymConfigModel.create(NewConfig);
+      // const created = await this.gymConfigModel.create(NewConfig);
   
-      if(!created)  throw new NotFoundException ("problem in creation of the gym");
+      // if(!created)  throw new NotFoundException ("problem in creation of the gym");
 
-      return created._id;
+      // return created._id;
     }
   
     verifValidId(id: string){
