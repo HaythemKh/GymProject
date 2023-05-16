@@ -15,8 +15,8 @@ export class reservation{
         this.End_time = anyData.End_time;
     }
 
-    setStartDate(time : string){this.Start_time = new Date(time);}
-    setEndDate(time : string){this.End_time = new Date(time);}
+    setStartDate(time : string){this.Start_time = new Date(time);this.Start_time.setHours(this.Start_time.getHours() + 1);}
+    setEndDate(time : string){this.End_time = new Date(time);this.End_time.setHours(this.End_time.getHours() + 1);}
     
 
 }

@@ -8,6 +8,7 @@ import { UsersModule } from 'src/users/users.module';
 import { GymModule } from 'src/gym/gym.module';
 import { Equipment, EquipmentSchema } from 'src/Schemas/equipment.models';
 import { Person, UserSchema } from 'src/Schemas/users.models';
+import { GymConfigModule } from 'src/gym-config/gym-config.module';
 
 @Module({
   imports : [
@@ -16,7 +17,8 @@ import { Person, UserSchema } from 'src/Schemas/users.models';
     MongooseModule.forFeature([{name : Person.name, schema:UserSchema}]),
     EquipmentModule,
     UsersModule,
-    GymModule
+    GymModule,
+    GymConfigModule,
   ],
   controllers: [ReservationController],
   providers: [ReservationService],

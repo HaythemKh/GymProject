@@ -1,11 +1,11 @@
-import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Person, Role, UserDocument } from 'src/Schemas/users.models';
 import { User } from 'src/users/Models/user.model';
 import { UsersService } from 'src/users/users.service';
-import { AuthDto, SendEmailDto } from './dto/auth.dto';
+import { AuthDto, ResetPasswordDto, SendEmailDto } from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
 import { SendEmailService } from 'src/send-email/send-email.service';
 import * as moment from 'moment';
@@ -52,7 +52,6 @@ export class AuthService {
 
     async forgotPassword(forgotPasswordDto : SendEmailDto) : Promise<any>{
         const email = forgotPasswordDto.email;
-        
 
         const user = await this.userModel.findOne({Email : email});
         if(!user) throw new NotFoundException("User not found");
@@ -68,8 +67,8 @@ export class AuthService {
 
         usedCodes.add(verificationCode);
 
-        const now = new Date();
-        const expirationDate = new Date(); // Add 1 hour
+        const expirationDate = new Date();
+        expirationDate.setHours(expirationDate.getHours() + 2);
 
         console.log(expirationDate)
   
@@ -89,19 +88,19 @@ export class AuthService {
         <p><b>Verification Code of your account in gymp</b></p>
         <p>Hello ${user.firstName},<p>
 
-      <p>You are receiving this email because you requested a password reset for your account.</p>
+        <p>You are receiving this email because you requested a password reset for your account.</p>
 
-      <p>This code can only be used once Please ignore this email if you did not request a code.
-      Never share this code with anyone else.</p>
+        <p>This code can only be used once Please ignore this email if you did not request a code.
+        Never share this code with anyone else.</p>
 
-      <p><b>confirmation code</b></p>
+        <p><b>confirmation code</b></p>
 
-      <div style="background: linear-gradient(to bottom, #f2f2f2, #e6e6e6); border: 1px solid #ccc; padding: 15px; border-radius: 4px;">
-      <p style="font-size: 24px; font-weight: bold; margin: 0; text-align: center;">${verificationCode}</p>
-      </div>
-      <p>Thanks,</p>
-      <p>The Gym Support Team</p>
-      </div>
+        <div style="background: linear-gradient(to bottom, #f2f2f2, #e6e6e6); border: 1px solid #ccc; padding: 15px; border-radius: 4px;">
+        <p style="font-size: 24px; font-weight: bold; margin: 0; text-align: center;">${verificationCode}</p>
+        </div>
+        <p>Thanks,</p>
+        <p>The Gym Support Team</p>
+        </div>
     `;
 
     if(await this.sendMailService.sendMail(email, subject, message))
@@ -118,6 +117,38 @@ export class AuthService {
           code += codeCharacters[randomIndex];
         }
         return code;    
+    }
+
+    async resetPassword(resetPasswordDto : ResetPasswordDto) : Promise<any>{
+
+        const expirationDate = new Date();
+        expirationDate.setHours(expirationDate.getHours() + 1);
+
+        const filter = {
+            resetPasswordCode: resetPasswordDto.resetCode,
+            resetPasswordExpiresCode: { $gt: expirationDate },
+          };
+
+          const hashedPassword = await bcrypt.hash(resetPasswordDto.newPassword,10);
+      
+          const update = {
+            $set: {
+              Password: hashedPassword,
+              resetPasswordCode: '',
+              resetPasswordExpiresCode: '',
+            },
+            
+          };
+          const updatedUser = await this.userModel.findOneAndUpdate(
+            filter,
+            update,
+            { new: true }
+          );
+
+          if (!updatedUser) {
+            throw new BadRequestException('Invalid or expired verification code');
+          }
+          return {"Message" : "Password changed Successfully"};
     }
  
 }

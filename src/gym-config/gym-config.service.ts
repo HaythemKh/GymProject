@@ -38,7 +38,7 @@ export class GymConfigService {
     }
   
     async findOne(req: any) : Promise<gymConfig> {
-
+      
       const gym = await this.gymModel.findOne({_id : req.user.gym});
       const currrentConfig = await this.gymConfigModel.findOne({_id: gym.gymConfig}).exec();
       if(!currrentConfig) throw new NotFoundException("this GymConfig doesn't exist");
@@ -85,7 +85,7 @@ export class GymConfigService {
       const gym = await this.gymModel.findOne({_id : id});
       const currrentConfig = await this.gymConfigModel.findOne({_id: gym.gymConfig}).exec();
       if(!currrentConfig) throw new NotFoundException("this GymConfig doesn't exist");
-  
+      
       const Config : gymConfig = new gymConfig(currrentConfig);
       return  Config;
     }

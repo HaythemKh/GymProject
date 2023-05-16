@@ -60,10 +60,10 @@ export class Person {
     @Prop({required:false,immutable : true, default : Date.now})
     createdAt : Date;
 
-    @Prop({required:false})
+    @Prop({required:false, default: undefined})
     resetPasswordCode: string;
 
-    @Prop({required:false})
+    @Prop({required:false, default: undefined})
     resetPasswordExpiresCode: Date;
     
 }

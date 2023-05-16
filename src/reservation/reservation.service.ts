@@ -1,8 +1,10 @@
-import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
 import { EquipmentService } from 'src/equipment/equipment.service';
+import { GymConfigService } from 'src/gym-config/gym-config.service';
+import { gymConfig } from 'src/gym-config/Model/gymConfig.model';
 import { GymService } from 'src/gym/gym.service';
 import { Equipment, EquipmentDocument } from 'src/Schemas/equipment.models';
 import { Reservation, ReservationDocument } from 'src/Schemas/reservation.models';
@@ -21,28 +23,57 @@ export class ReservationService {
     @Inject(UsersService) private  usersService : UsersService,
     @Inject(GymService) private  gymService : GymService,
     @InjectModel(Equipment.name) private EquipmentModel : Model<EquipmentDocument>,
-    @InjectModel(Person.name) private userModel : Model<UserDocument>
+    @InjectModel(Person.name) private userModel : Model<UserDocument>,
+    @Inject(GymConfigService) private  gymConfigService : GymConfigService,
   ){}
 
   async create(createReservationDto: CreateReservationDto, req : any) : Promise<any> {
 
-    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Member can reservate a specific equipment !!");
+    if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Only Member can reservate a specific equipment !!");
 
-    this.validateReservation(createReservationDto);
 
-    const verifexist = await this.reservationModel.findOne({Equipment :createReservationDto.Equipment ,Start_time :createReservationDto.Start_time,End_time : createReservationDto.End_time });
-    if(verifexist) throw new NotFoundException("this equipment is reservated at this time");
+
     createReservationDto.User = req.user.sub;
 
     let reserve : reservation = new reservation(createReservationDto);
     reserve.setStartDate(createReservationDto.Start_time)
     reserve.setEndDate(createReservationDto.End_time)
-    
-    // if(! await this.equipmentService.isAvailable(createReservationDto.Equipment)) throw new NotFoundException("this equipment is not available because she is reserved by another user");
+
+    this.validateReservation(createReservationDto,reserve.Start_time,reserve.End_time);
+
+    const gymconfig = await this.gymConfigService.findOneGym(req.user.gym);
+    const convertorOpening : string = `${gymconfig.OpeningTime}`;
+    const convertorClosing : string = `${gymconfig.ClosingTime}`;
+    const [h1, m1] = convertorOpening.split(':');
+    const [h2, m2] = convertorClosing.split(':');
+    const hourOpen = Number(h1);
+    const minuteOpen = Number(m1);
+    const hourClose = Number(h2);
+    const minuteClose = Number(m2);
+
+    const reserveStartHour = reserve.Start_time.getUTCHours();
+    const reserveStartMinutes = reserve.Start_time.getUTCMinutes();
+    const reserveEndHour = reserve.End_time.getUTCHours();
+    const reserveEndMinutes = reserve.End_time.getUTCMinutes();
+    if (
+      reserveStartHour < hourOpen ||
+      reserveStartHour > hourClose ||
+      (reserveStartHour === hourOpen && reserveStartMinutes < minuteOpen) ||
+      reserveEndHour > hourClose ||
+      (reserveEndHour === hourClose && reserveEndMinutes >= minuteClose)
+      ) 
+      throw new BadRequestException("this Gym is Closed at this time it Open at " + gymconfig.OpeningTime + "and cloed at " + gymconfig.ClosingTime);
+
+    const verifexist = await this.reservationModel.findOne({Equipment :createReservationDto.Equipment ,Start_time :reserve.Start_time,End_time : reserve.End_time });
+    if(verifexist) throw new NotFoundException("this equipment is reservated at this time");
+
+    const verif2 = await this.reservationModel.findOne({Equipment :createReservationDto.Equipment ,Start_time :{ $gte: reserve.Start_time, $lt: reserve.End_time }});
+    const verif3 = await this.reservationModel.findOne({Equipment :createReservationDto.Equipment ,End_time : { $gt: reserve.Start_time, $lte: reserve.End_time } });
+    if(verif2 || verif3) throw new BadRequestException('Equipment is not available during the specified time slot.');
+
     const created = await this.reservationModel.create(reserve);
     if(!created) throw new NotFoundException("problem with reservation");
 
-    // this.equipmentService.updateEquipmentStatusToFalse(created.Equipment);
     return {"message" : "Reservation added successfully"};
 
   }
@@ -56,34 +87,35 @@ export class ReservationService {
     return this.isDate(date);
   }
 
-  validateReservation(data : CreateReservationDto) : any
+  validateReservation(data : CreateReservationDto, dateStart : Date, dateEnd : Date) : any
   {
     this.equipmentService.verifValidId(data.Equipment);
-    // this.usersService.verifValidId(data.User)
+
     if(!this.usersService.IsUserExist(data.User)) throw new NotFoundException("User doesn't exist!");
     if(!this.equipmentService.IsEquipmentExist(data.Equipment)) throw new NotFoundException("Equipment doesn't Exist!");
 
     if(!this.validateDate(data.Start_time)) throw new NotFoundException('Invalid start time!');
     if(!this.validateDate(data.End_time)) throw new NotFoundException('Invalid start time!');
 
-    const date1 = new Date(data.Start_time);
-    const date2 = new Date(data.End_time);
+    const date1 = dateStart;
 
-    if(new Date() > date1)throw new NotFoundException("Current date is greater than reservation start time");
-    if( new Date() > date2)throw new NotFoundException("Current date is greater than reservation End time");
+    const date2 = dateEnd;
 
-    const diffInMsDateNow =  date1.getTime() - new Date().getTime(); // Subtract first date from  date now
+    const now = new Date();
+    now.setHours(now.getHours() + 1);
+
+    if( now > date1)throw new NotFoundException("Current date is greater than reservation start time");
+    if( now > date2)throw new NotFoundException("Current date is greater than reservation End time");
+
+    const diffInMsDateNow =  date1.getTime() - now.getTime(); // Subtract first date from  date now
     const diffInMinutesNow = Math.floor(diffInMsDateNow / (1000 * 60)); // Convert to minutes and round down
 
     if(diffInMinutesNow < 30) throw new NotFoundException("Choose a reservation time greater than our time now by 30 Minutes");
-
-
 
     const diffInMs = date2.getTime() - date1.getTime(); // Subtract second date from first date
     const diffInMinutes = Math.floor(diffInMs / (1000 * 60)); // Convert to minutes and round down
 
     if(diffInMinutes != 30) throw new NotFoundException('Time of reservation must be 30 Minutes');
-    //console.log(diffInMinutes); // Output: 30
   }
 
   verifValidId(id: string){

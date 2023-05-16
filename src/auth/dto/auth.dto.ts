@@ -18,7 +18,7 @@ export class AuthDto {
   export class ResetPasswordDto {
 
     @IsString()
-    resetToken : string;
+    resetCode : string;
     @IsString()
     newPassword: string;
   }
