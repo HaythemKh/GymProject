@@ -3,7 +3,7 @@ export class equipment {
     public readonly  _id : string;
     public readonly  Name : string;
     public readonly  Description : string;
-    public readonly  Availability : string;
+    public readonly  Availability : Boolean;
     public readonly  Image : string;
     public readonly  Gym : string;
 

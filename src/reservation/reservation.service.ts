@@ -13,7 +13,7 @@ import { SubsMembershipService } from 'src/subs-membership/subs-membership.servi
 import { UsersService } from 'src/users/users.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
-import { reservation } from './Model/reservation.model';211115
+import { reservation } from './Model/reservation.model';
 
 @Injectable()
 export class ReservationService {
@@ -61,9 +61,9 @@ export class ReservationService {
       reserveStartHour > hourClose ||
       (reserveStartHour === hourOpen && reserveStartMinutes < minuteOpen) ||
       reserveEndHour > hourClose ||
-      (reserveEndHour === hourClose && reserveEndMinutes >= minuteClose)
+      (reserveEndHour === hourClose && reserveEndMinutes > minuteClose)
       ) 
-      throw new BadRequestException("this Gym is Closed at this time it Open at " + gymconfig.OpeningTime + "and cloed at " + gymconfig.ClosingTime);
+      throw new BadRequestException("this Gym is Closed at this time it Open at " + gymconfig.OpeningTime + "and closed at " + gymconfig.ClosingTime);
 
     const verifexist = await this.reservationModel.findOne({Equipment :createReservationDto.Equipment ,Start_time :reserve.Start_time,End_time : reserve.End_time });
     if(verifexist) throw new NotFoundException("this equipment is reservated at this time");
@@ -202,6 +202,7 @@ export class ReservationService {
           EquipmentImage : Equipment.Image
         };
       results.push(combinedData);
+      
     }
   }
     return  results;

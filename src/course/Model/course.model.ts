@@ -5,9 +5,10 @@ export class course {
     public readonly Description : string;
     public readonly Capacity : number;
     public readonly Gym : string;
-    public StartDate : Date;
-    public EndDate : Date;
+    public readonly StartDate : Date;
+    public readonly EndDate : Date;
     public readonly PricePerMonth : number;
+    public readonly daysOfWeek: number[];
 
 
     constructor(anyData : any)
@@ -21,8 +22,7 @@ export class course {
         this.StartDate = anyData.StartDate;
         this.EndDate = anyData.EndDate;
         this.PricePerMonth = anyData.PricePerMonth;
+        this.daysOfWeek = anyData.daysOfWeek;
     }
 
-    setStartDate(start : Date){this.StartDate = start;}
-    setEndDate(end : Date){this.EndDate = end;}
 }

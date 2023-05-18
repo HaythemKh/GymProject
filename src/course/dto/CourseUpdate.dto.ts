@@ -1,5 +1,5 @@
 import { Exclude } from "class-transformer";
-import { IsOptional, IsString, IsNumber } from "class-validator";
+import { IsOptional, IsString, IsNumber, ArrayMaxSize, ArrayMinSize, IsArray, IsInt, Max, Min, IsNotEmpty } from "class-validator";
 
 export class UpdateDtoCourse {
     @Exclude()
@@ -24,6 +24,23 @@ export class UpdateDtoCourse {
     @IsOptional()
     @IsNumber()
     PricePerMonth : number;
+
+    @IsOptional()
+    @IsArray()
+    @ArrayMinSize(1)
+    @ArrayMaxSize(6)
+    @IsInt({ each: true })
+    @Min(0, { each: true })
+    @Max(6, { each: true })
+    daysOfWeek: number[];
+
+    @IsOptional()
+    @IsString()
+    StartDate : Date;
+
+    @IsOptional()
+    @IsString()
+    EndDate : Date;
 
     @IsOptional()
     @IsString()

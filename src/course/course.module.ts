@@ -7,6 +7,7 @@ import { Course, CourseSchema } from 'src/Schemas/course.models';
 import { UsersModule } from 'src/users/users.module';
 import { Person, UserSchema } from 'src/Schemas/users.models';
 import { Registration, RegistrationSchema } from 'src/Schemas/Registration.models';
+import { GymConfigModule } from 'src/gym-config/gym-config.module';
 
 @Module({
   imports : [
@@ -14,7 +15,8 @@ import { Registration, RegistrationSchema } from 'src/Schemas/Registration.model
     MongooseModule.forFeature([{name : Person.name, schema:UserSchema}]),
     MongooseModule.forFeature([{name : Registration.name, schema:RegistrationSchema}]),
     GymModule,
-    UsersModule
+    UsersModule,
+    GymConfigModule,
   ],
   controllers: [CourseController],
   providers: [CourseService],

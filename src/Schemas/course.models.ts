@@ -1,4 +1,5 @@
 import {Prop,Schema,SchemaFactory}  from '@nestjs/mongoose';
+import { ArrayMaxSize, ArrayMinSize } from 'class-validator';
 import mongoose, {Document}  from 'mongoose';
 
 export type CourseDocument = Course & Document;
@@ -24,12 +25,25 @@ export class Course {
     @Prop({ required:true})
     PricePerMonth : number;
 
-    @Prop({ required:false})
+    @ArrayMinSize(1)
+    @ArrayMaxSize(7)
+    @Prop({required:true,type: [{ type: Number }], enum: [0, 1, 2, 3, 4, 5, 6]})
+    daysOfWeek : number[];
+
+    @Prop({ required:true, get: formatTime})
     StartDate : Date;
 
-    @Prop({ required:false})
+    @Prop({ required:true,get: formatTime})
     EndDate : Date;
 
 }
+
+function formatTime(value: Date){
+  if (!value) {
+    return undefined;
+  }
+    return value.toTimeString().substring(0, 5);
+  }
+
 
 export const CourseSchema = SchemaFactory.createForClass(Course)

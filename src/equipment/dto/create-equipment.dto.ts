@@ -15,8 +15,8 @@ export class CreateEquipmentDto {
     Description : string;
 
     @IsNotEmpty()
-    @IsBooleanString()
-    Availability : boolean;
+    @IsBoolean()
+    Availability : Boolean;
 
     @IsNotEmpty()
     @IsString()

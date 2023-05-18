@@ -61,7 +61,7 @@ export class EquipmentService {
 
   async findOne(id: string,req : any) :Promise<equipment> {
 
-    if(req.user.role !== Role.ADMIN || req.user.role !== Role.MEMBER) throw new UnauthorizedException("you can't get Access to This !!");
+    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("you can't get Access to This !!");
 
     this.verifValidId(id);
     const currrentEquip = await this.EquipmentModel.findOne({_id: id,Gym : req.user.gym}).exec();

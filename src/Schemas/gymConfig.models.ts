@@ -46,8 +46,10 @@ export class GymConfig {
     NavbarDarkMode : string;
 }
 
-
 function formatTime(value: Date) {
+  if (!value) {
+    return undefined;
+  }
     return value.toTimeString().substring(0, 5);
   }
 
