@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { RegistrationModule } from './registration/registration.module';
 import { SubsMembershipModule } from './subs-membership/subs-membership.module';
 import { SendEmailModule } from './send-email/send-email.module';
+import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { SendEmailModule } from './send-email/send-email.module';
     RegistrationModule,
     SubsMembershipModule,
     SendEmailModule,
+    ReportModule,
   ],
   controllers: [],
   providers: [],

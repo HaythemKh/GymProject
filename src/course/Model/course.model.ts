@@ -9,6 +9,7 @@ export class course {
     public readonly EndDate : Date;
     public readonly PricePerMonth : number;
     public readonly daysOfWeek: number[];
+    public readonly Equipments: string[];
 
 
     constructor(anyData : any)
@@ -23,6 +24,7 @@ export class course {
         this.EndDate = anyData.EndDate;
         this.PricePerMonth = anyData.PricePerMonth;
         this.daysOfWeek = anyData.daysOfWeek;
+        this.Equipments = anyData.Equipments;
     }
 
 }

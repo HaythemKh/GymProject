@@ -36,6 +36,10 @@ export class CreateCourseDto {
     @Max(6, { each: true })
     daysOfWeek: number[];
 
+    @IsString({ each: true })
+    @ArrayMinSize(0)
+    Equipments : string[];
+
     @IsNotEmpty()
     @IsString()
     StartDate : Date;

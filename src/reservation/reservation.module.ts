@@ -10,12 +10,14 @@ import { Equipment, EquipmentSchema } from 'src/Schemas/equipment.models';
 import { Person, UserSchema } from 'src/Schemas/users.models';
 import { GymConfigModule } from 'src/gym-config/gym-config.module';
 import { SubsMembershipModule } from 'src/subs-membership/subs-membership.module';
+import { Course, CourseSchema } from 'src/Schemas/course.models';
 
 @Module({
   imports : [
     MongooseModule.forFeature([{name : Reservation.name, schema:ReservationSchema}]),
     MongooseModule.forFeature([{name : Equipment.name, schema:EquipmentSchema}]),
     MongooseModule.forFeature([{name : Person.name, schema:UserSchema}]),
+    MongooseModule.forFeature([{name : Course.name, schema:CourseSchema}]),
     EquipmentModule,
     UsersModule,
     GymModule,

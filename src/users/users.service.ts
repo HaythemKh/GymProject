@@ -106,7 +106,7 @@ export class UsersService {
     return listTrainers;
  }
  IsUserExist(id : string) : boolean {
-  const currrentUser =  this.userModel.findOne({_id: id}).exec();
+  const currrentUser = this.userModel.findOne({_id: id}).exec();
    return !isEmpty(currrentUser);
  }
 

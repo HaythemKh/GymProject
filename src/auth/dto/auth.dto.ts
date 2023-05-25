@@ -22,3 +22,8 @@ export class AuthDto {
     @IsString()
     newPassword: string;
   }
+
+  export class verifCodeDto{
+    @IsString()
+    resetCode : string;
+  }

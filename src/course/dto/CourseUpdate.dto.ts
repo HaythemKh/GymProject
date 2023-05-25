@@ -35,6 +35,11 @@ export class UpdateDtoCourse {
     daysOfWeek: number[];
 
     @IsOptional()
+    @IsString({ each: true })
+    @ArrayMinSize(0)
+    Equipments : string[];
+
+    @IsOptional()
     @IsString()
     StartDate : Date;
 

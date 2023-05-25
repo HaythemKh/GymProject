@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import { Person, Role, UserDocument } from 'src/Schemas/users.models';
 import { User } from 'src/users/Models/user.model';
 import { UsersService } from 'src/users/users.service';
-import { AuthDto, ResetPasswordDto, SendEmailDto } from './dto/auth.dto';
+import { AuthDto, ResetPasswordDto, SendEmailDto, verifCodeDto } from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
 import { SendEmailService } from 'src/send-email/send-email.service';
 import * as moment from 'moment';
@@ -117,6 +117,15 @@ export class AuthService {
           code += codeCharacters[randomIndex];
         }
         return code;    
+    }
+
+    async verifCode(verifCode : verifCodeDto) : Promise<Boolean>{
+        const expirationDate = new Date();
+        expirationDate.setHours(expirationDate.getHours() + 1);
+        
+        const user = await this.userModel.findOne({resetPasswordCode : verifCode.resetCode,resetPasswordExpiresCode : {$gt : expirationDate}});
+        if(user) return true;
+        return false;
     }
 
     async resetPassword(resetPasswordDto : ResetPasswordDto) : Promise<any>{

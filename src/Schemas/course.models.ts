@@ -30,6 +30,9 @@ export class Course {
     @Prop({required:true,type: [{ type: Number }], enum: [0, 1, 2, 3, 4, 5, 6]})
     daysOfWeek : number[];
 
+    @Prop({required:true, default: [] })
+    Equipments : string[];
+
     @Prop({ required:true, get: formatTime})
     StartDate : Date;
 
