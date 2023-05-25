@@ -202,13 +202,33 @@ export class UsersService {
    }
 }
 
-async findByEmail(email: string): Promise<Person | null> {
-  return this.userModel.findOne({ email }).exec();
-}
+async updateProfile(updateUserDto: UpdateUserDto, req : any) : Promise<any> {
 
-async findByResetPasswordToken(token: string): Promise<Person | null> {
-  return this.userModel.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: new Date() } }).exec();
-}
+   const foundDocument = await this.userModel.findOne({ _id: req.user.sub,Gym : req.user.gym }).exec();
+   if(isEmpty(foundDocument)) throw new NotFoundException("user doesn't exist");
+   else
+   {
+    if(updateUserDto.Password)
+    {
+      let hashedPassword = await bcrypt.hash(updateUserDto.Password,10);
+      updateUserDto.Password = hashedPassword;
+    } else
+      updateUserDto.Password = foundDocument.Password;
 
+    let user : User = null;
+
+    if (foundDocument.Role === Role.ADMIN)  user = new admin(updateUserDto);
+    else if(foundDocument.Role === Role.MEMBER) user = new member(updateUserDto);
+    else if(foundDocument.Role === Role.TRAINER)  user = new trainer(updateUserDto);
+
+   const updatedUser = await this.userModel.findByIdAndUpdate(
+     {_id : req.user.sub},
+     {$set: user},
+     {new: true},
+   )
+   if(!isEmpty(updatedUser)) return {"message" : `Profile ${foundDocument.Role}  updated successfully`};
+   else throw new NotFoundException("updating Profile denied");
+  }
+ }
 
 }

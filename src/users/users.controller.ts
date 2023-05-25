@@ -71,4 +71,10 @@ export class UsersController {
   async remove(@Param('id') id: string,@Request() req : any) : Promise<any> {
     return await this.usersService.remove(id,req);
   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('/MyProfile/Update')
+  async updateProfile(@Body() updateUserDto: UpdateUserDto,@Request() req : any) : Promise<any> {
+    return await this.usersService.updateProfile(updateUserDto,req);
+  }
 }
