@@ -77,6 +77,9 @@ export class RegistrationService {
         MemberName: Member.firstName,
         MemberLastname: Member.lastName,
         CourseName : course.Name,
+        StartTime : course.StartDate,
+        EndTime : course.EndDate,
+        daysOfWeek : course.daysOfWeek,
         ExpireDate : expirationDate
       };
       results.push(combinedData);
