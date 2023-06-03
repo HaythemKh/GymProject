@@ -17,7 +17,11 @@ export class UpdateSubscriptionDto{
 
     @IsOptional()
     @IsNumber()
-    PricePerMonth : number;
+    Price : number;
+
+    @IsOptional()
+    @IsNumber()
+    Duration : number;
 
     @Exclude()
     Gym : string;

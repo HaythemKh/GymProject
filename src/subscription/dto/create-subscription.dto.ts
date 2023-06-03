@@ -16,7 +16,11 @@ export class CreateSubscriptionDto {
 
     @IsNotEmpty()
     @IsNumber()
-    PricePerMonth : number;
+    Price : number;
+
+    @IsNotEmpty()
+    @IsNumber()
+    Duration : number;
 
     @IsOptional()
     @IsString()

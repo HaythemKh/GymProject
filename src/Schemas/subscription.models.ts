@@ -13,7 +13,10 @@ export class Subscription {
     Description : string;
 
     @Prop({ required:true})
-    PricePerMonth : number;
+    Price : number;
+
+    @Prop({ required:true})
+    Duration : number;
 
     @Prop({ required:true,type: mongoose.Schema.Types.ObjectId, ref: 'gym'})
     Gym : string;
