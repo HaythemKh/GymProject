@@ -9,6 +9,7 @@ import { GymService } from 'src/gym/gym.service';
 import { Course, CourseDocument } from 'src/Schemas/course.models';
 import { Equipment, EquipmentDocument } from 'src/Schemas/equipment.models';
 import { Reservation, ReservationDocument } from 'src/Schemas/reservation.models';
+import { SubsMembership, SubsMembershipDocument } from 'src/Schemas/subsmembership.models';
 import { Person, Role, UserDocument } from 'src/Schemas/users.models';
 import { SubsMembershipService } from 'src/subs-membership/subs-membership.service';
 import { UsersService } from 'src/users/users.service';
@@ -28,16 +29,14 @@ export class ReservationService {
     @InjectModel(Person.name) private userModel : Model<UserDocument>,
     @Inject(GymConfigService) private  gymConfigService : GymConfigService,
     @Inject(SubsMembershipService) private  SubsMemberService : SubsMembershipService,
-    @InjectModel(Course.name) private CourseModel : Model<CourseDocument>
-
+    @InjectModel(Course.name) private CourseModel : Model<CourseDocument>,
   ){}
 
   async create(createReservationDto: CreateReservationDto, req : any) : Promise<any> {
 
     if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Only Member can reservate a specific equipment !!");
-    if(!await this.SubsMemberService.IsSubscribed(req.user.sub)) throw new BadRequestException("Please purchase a subscription before making a reservation.");
-    createReservationDto.User = req.user.sub;
-
+     if(!await this.SubsMemberService.isSubscribed(req.user.sub)) throw new BadRequestException("Please purchase a subscription before making a reservation.");
+     createReservationDto.User = req.user.sub;
     let reserve : reservation = new reservation(createReservationDto);
     reserve.setStartDate(createReservationDto.Start_time)
     reserve.setEndDate(createReservationDto.End_time)
@@ -91,7 +90,6 @@ export class ReservationService {
     if(!created) throw new BadRequestException("problem with reservation");
 
     return {"message" : "Reservation added successfully"};
-
   }
 
   async verifCourseEquipmentTimes(equipment : any, day : number, StartTime : Date, EndTime : Date) : Promise<Boolean>{
@@ -168,7 +166,7 @@ export class ReservationService {
 
         if(!this.usersService.IsUserExist(updateReservationDto.User)) throw new NotFoundException("User doesn't exist!");
 
-        if(!this.SubsMemberService.IsSubscribed(updateReservationDto.User)) throw new BadRequestException("Member doesn't have a subscription.");
+        if(!this.SubsMemberService.isSubscribed(updateReservationDto.User)) throw new BadRequestException("Member doesn't have a subscription.");
       }
 
       await this.validateReservation(reserve,reserve.Start_time,reserve.End_time);

@@ -48,9 +48,9 @@ export class SubsMembershipService {
     return "subsMembership created successfully";
   }
 
-  async IsSubscribed(id : any) : Promise<Boolean>{
-    const currrentEquip =  await this.subsMembershipModel.findOne({_id: id,IsActive : true}).exec();
-    return !isEmpty(currrentEquip);
+  async isSubscribed(id : string) : Promise<boolean>{
+    const result = await this.subsMembershipModel.findOne({Member: id,IsActive : true}).exec();
+    return !!result;
   }
 
   verifValidId(id: string){

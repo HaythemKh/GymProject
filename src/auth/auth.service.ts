@@ -119,13 +119,13 @@ export class AuthService {
         return code;    
     }
 
-    async verifCode(verifCode : verifCodeDto) : Promise<Boolean>{
+    async verifCode(verifCode : verifCodeDto) : Promise<any>{
         const expirationDate = new Date();
         expirationDate.setHours(expirationDate.getHours() + 1);
         
         const user = await this.userModel.findOne({resetPasswordCode : verifCode.resetCode,resetPasswordExpiresCode : {$gt : expirationDate}});
-        if(user) return true;
-        return false;
+        if(!user) throw new BadRequestException("Verification code are incorrect or not valid");
+        return !!user;
     }
 
     async resetPassword(resetPasswordDto : ResetPasswordDto) : Promise<any>{

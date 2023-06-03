@@ -11,6 +11,7 @@ import { Person, UserSchema } from 'src/Schemas/users.models';
 import { GymConfigModule } from 'src/gym-config/gym-config.module';
 import { SubsMembershipModule } from 'src/subs-membership/subs-membership.module';
 import { Course, CourseSchema } from 'src/Schemas/course.models';
+import { SubsMembership, SubsMembershipSchema } from 'src/Schemas/subsmembership.models';
 
 @Module({
   imports : [
