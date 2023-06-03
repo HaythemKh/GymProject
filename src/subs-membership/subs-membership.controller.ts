@@ -47,9 +47,9 @@ export class SubsMembershipController {
   }
 
 
-  // @UseGuards(AuthGuard("jwt"))
-  // @Get("/Member/LastOne")
-  // async LastOne(@Request() req : any) : Promise<subsmembership>{
-  //   return await this.subsMembershipService.LastOne(req);
-  // }
+  @UseGuards(AuthGuard("jwt"))
+  @Get("/Member/LastOne")
+  async LastOne(@Request() req : any) : Promise<subsmembership>{
+    return await this.subsMembershipService.LastOne(req);
+  }
 }

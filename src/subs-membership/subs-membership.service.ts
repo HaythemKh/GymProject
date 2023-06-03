@@ -38,7 +38,7 @@ export class SubsMembershipService {
 
     const SubsList = await this.gymService.getSubscriptionsListByGym(req.user.gym);
 
-    const verif = await this.subsMembershipModel.findOne({Member : req.user.sub,Subscription :createSubsMembershipDto.Subscription,IsActive : true});
+    const verif = await this.subsMembershipModel.findOne({Member : req.user.sub,IsActive : true});
     if(verif){
       const SubsMembershipModel = await this.subsMembershipModel.findOne({Member : req.user.sub,IsActive : true}).sort({createdAt : -1});
       const now = new Date(SubsMembershipModel.createdAt);
@@ -122,7 +122,7 @@ export class SubsMembershipService {
   }
 
   async remove(id: string,req : any) : Promise<any> {
-    if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
+    // if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
 
     this.verifValidId(id);
     const deletedsubsMembership = await this.subsMembershipModel.findByIdAndDelete({_id : id});
@@ -167,10 +167,10 @@ export class SubsMembershipService {
 
   }
 
-  // async LastOne(req : any) : Promise<subsmembership> {
-  //   const SubsMembershipModel = await this.subsMembershipModel.findOne({Member : req.user.sub,IsActive : true}).sort({createdAt : -1});
-  //   if(isEmpty(SubsMembershipModel)) throw new NotFoundException("SubsMembership doesn't exist");
-  //   const Subsmembership : subsmembership = new subsmembership(SubsMembershipModel);
-  //   return  SubsMembershipModel;
-  // }
+  async LastOne(req : any) : Promise<subsmembership> {
+    const SubsMembershipModel = await this.subsMembershipModel.findOne({Member : req.user.sub,IsActive : true}).sort({createdAt : -1});
+    if(isEmpty(SubsMembershipModel)) throw new NotFoundException("SubsMembership doesn't exist");
+    const Subsmembership : subsmembership = new subsmembership(SubsMembershipModel);
+    return  SubsMembershipModel;
+  }
 }

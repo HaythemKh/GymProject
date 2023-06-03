@@ -8,7 +8,7 @@ import { winstonLogger } from './winston.logger';
 
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule/*, { logger: winstonLogger }*/);
+  const app = await NestFactory.create(AppModule/*,{logger: WinstonModule.createLogger(winstonLogger)}*/);
   app.setGlobalPrefix('/api');
 
   app.useGlobalFilters(new ValidationFilter());
@@ -24,8 +24,6 @@ async function bootstrap() {
     },
   }),
   );
-
-
   app.use(cors());
   
   const port = process.env.PORT;

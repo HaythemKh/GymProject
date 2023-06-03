@@ -1,16 +1,17 @@
-import { createLogger, format, transports } from 'winston';
+import { createLogger, format, transports  } from 'winston';
+import { WinstonModuleOptions, utilities } from 'nest-winston';
 
-export const winstonLogger = createLogger({
+const winstonConfig: WinstonModuleOptions = {
   level: 'info',
+  format: format.combine(
+    format.timestamp(),
+    utilities.format.nestLike(),
+  ),
   transports: [
     new transports.Console(),
   ],
-  format: format.combine(
-    format.timestamp(),
-    format.prettyPrint()
-  ),
-});
-
+};
+export const winstonLogger = createLogger(winstonConfig);
 
 
 
