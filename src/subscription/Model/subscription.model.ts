@@ -12,7 +12,7 @@ export class subscription {
         this._id = subscriptionData._id;
         this.Name = subscriptionData.Name;
         this.Description = subscriptionData.Description;
-        this.Price = subscriptionData.PricePerMonth;
+        this.Price = subscriptionData.Price;
         this.Duration = subscriptionData.Duration;
         this.Gym = subscriptionData.Gym;
     }
