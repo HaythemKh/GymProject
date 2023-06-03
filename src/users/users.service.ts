@@ -11,13 +11,17 @@ import { member } from './Models/member.model';
 import { trainer } from './Models/trainer.model';
 import { User } from './Models/user.model';
 import * as bcrypt from 'bcrypt';
+import { CourseService } from 'src/course/course.service';
+import { Course, CourseDocument } from 'src/Schemas/course.models';
+import { course } from 'src/course/Model/course.model';
 
 @Injectable()
 export class UsersService {
 
   constructor(
     @InjectModel(Person.name) private userModel : Model<UserDocument>, 
-    @Inject(GymService) private  gymService : GymService 
+    @Inject(GymService) private  gymService : GymService,
+    @InjectModel(Course.name) private CourseModel : Model<CourseDocument>,
     ){}
  
   
@@ -201,6 +205,7 @@ export class UsersService {
      return user;
    }
 }
+
 
 async updateProfile(updateUserDto: UpdateUserDto, req : any) : Promise<any> {
 

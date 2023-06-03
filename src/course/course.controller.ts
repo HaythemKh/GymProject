@@ -43,4 +43,10 @@ export class CourseController {
     return await this.courseService.AvailableCourses(req);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Get("Trainer/MyAssignedCourses")
+  async AssignedCourses(@Request() req : any) : Promise<any[]> {
+    return await this.courseService.AssignedCourses(req);
+  }
+
 }

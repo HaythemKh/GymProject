@@ -4,10 +4,12 @@ import { UsersController } from './users.controller';
 import { Person, UserSchema } from 'src/Schemas/users.models';
 import { MongooseModule } from '@nestjs/mongoose';
 import { GymModule } from 'src/gym/gym.module';
+import { Course, CourseSchema } from 'src/Schemas/course.models';
 
 @Module({
   imports : [
     MongooseModule.forFeature([{name : Person.name, schema:UserSchema}]),
+    MongooseModule.forFeature([{name : Course.name, schema:CourseSchema}]),
     GymModule
 ],
   controllers: [UsersController],

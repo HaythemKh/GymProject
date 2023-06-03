@@ -35,7 +35,7 @@ export class ReservationService {
   async create(createReservationDto: CreateReservationDto, req : any) : Promise<any> {
 
     if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Only Member can reservate a specific equipment !!");
-    if(!this.SubsMemberService.IsSubscribed(req.user.sub)) throw new BadRequestException("Please purchase a subscription before making a reservation.");
+    if(!await this.SubsMemberService.IsSubscribed(req.user.sub)) throw new BadRequestException("Please purchase a subscription before making a reservation.");
     createReservationDto.User = req.user.sub;
 
     let reserve : reservation = new reservation(createReservationDto);
@@ -265,7 +265,6 @@ export class ReservationService {
     const findDoc = await this.reservationModel.findOne({_id : id});
     if(isEmpty(findDoc)) throw new NotFoundException("reservation doesn't exist");
     let previousReservation : reservation = new reservation(findDoc);
-
     await this.validationUpdateReservation(updateReservationDto,req,previousReservation);
     let reserve : reservation = new reservation(updateReservationDto);
     if(updateReservationDto.Start_time && updateReservationDto.End_time)

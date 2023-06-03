@@ -39,8 +39,8 @@ export class SubscriptionController {
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Get("Member/MyPreviousSubscriptions")
-  async MyRegistrations(@Request() req : any) : Promise<subscription[]>{
+  @Get("Member/AvailableSubscriptions")
+  async AvailableSubscriptions(@Request() req : any) : Promise<subscription[]>{
     return await this.subscriptionService.AvailableSubscriptions(req);
   }
 }

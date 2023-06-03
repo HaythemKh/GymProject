@@ -107,8 +107,8 @@ export class SubscriptionService {
     const results = [];
 
       for (const subscription of AllSubscriptions) {
-      const VerifyMembershipSubscription = await this.subsMembershipModel.findOne({Member : req.user.sub, Subscription : subscription._id,IsActive : true});
-      if(!VerifyMembershipSubscription)
+      // const VerifyMembershipSubscription = await this.subsMembershipModel.findOne({Member : req.user.sub, Subscription : subscription._id,IsActive : true});
+      // if(!VerifyMembershipSubscription)
       results.push(subscription);
       }
       return  results;

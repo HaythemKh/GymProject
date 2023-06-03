@@ -48,8 +48,8 @@ export class SubsMembershipService {
     return "subsMembership created successfully";
   }
 
-  IsSubscribed(id : string) : boolean{
-    const currrentEquip =  this.subsMembershipModel.findOne({_id: id,IsActive : true}).exec();
+  async IsSubscribed(id : any) : Promise<Boolean>{
+    const currrentEquip =  await this.subsMembershipModel.findOne({_id: id,IsActive : true}).exec();
     return !isEmpty(currrentEquip);
   }
 

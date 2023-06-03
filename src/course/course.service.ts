@@ -281,4 +281,13 @@ export class CourseService {
   }
     return  results;
   }
+
+  async AssignedCourses(req : any) : Promise<any[]>{
+    const mycourses = await this.CourseModel.find({Trainer : req.user.sub});
+    let listCourses : course[] = [] ;
+    mycourses.map(courseJson => {
+      listCourses.push(new course(courseJson));
+    });
+     return listCourses;
+  }
 }
