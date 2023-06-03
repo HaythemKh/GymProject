@@ -38,11 +38,16 @@ export class SubsMembershipService {
 
     const SubsList = await this.gymService.getSubscriptionsListByGym(req.user.gym);
 
-    const verif = await this.subsMembershipModel.findOne({Member : req.user.sub,Subscription :createSubsMembershipDto.Subscription });
-    if(verif) throw new BadRequestException("You are already subscribed to this Subscription");
+    const verif = await this.subsMembershipModel.findOne({Member : req.user.sub,Subscription :createSubsMembershipDto.Subscription,IsActive : true});
+    if(verif){
+      const SubsMembershipModel = await this.subsMembershipModel.findOne({Member : req.user.sub,IsActive : true}).sort({createdAt : -1});
+      const now = new Date(SubsMembershipModel.createdAt);
+      const creationTime : Date = new Date(now.getTime() + (createSubsMembershipDto.Duration * 24 * 60 * 60 * 1000));
+      createSubsMembershipDto.createdAt = creationTime;
+    }
     const Register = new subsmembership(createSubsMembershipDto);
-    const Member = await this.subsMembershipModel.countDocuments({Member : req.user.sub,Subscription : {$in : SubsList},IsActive : true});
-    if(Member !== 0) throw new BadRequestException("You already subscribed to another subscription");
+    // const Member = await this.subsMembershipModel.countDocuments({Member : req.user.sub,Subscription : {$in : SubsList},IsActive : true});
+    // if(Member !== 0) throw new BadRequestException("You already subscribed to another subscription");
     const created = await this.subsMembershipModel.create(Register);
     if(!created) throw new BadRequestException("there is a problem in the creation of the subsMembership")
     return "subsMembership created successfully";
@@ -161,4 +166,11 @@ export class SubsMembershipService {
     return  results;
 
   }
+
+  // async LastOne(req : any) : Promise<subsmembership> {
+  //   const SubsMembershipModel = await this.subsMembershipModel.findOne({Member : req.user.sub,IsActive : true}).sort({createdAt : -1});
+  //   if(isEmpty(SubsMembershipModel)) throw new NotFoundException("SubsMembership doesn't exist");
+  //   const Subsmembership : subsmembership = new subsmembership(SubsMembershipModel);
+  //   return  SubsMembershipModel;
+  // }
 }

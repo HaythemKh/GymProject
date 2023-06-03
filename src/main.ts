@@ -3,12 +3,12 @@ import { AppModule } from './app.module';
 import * as cors from 'cors';
 import { ValidationPipe,ValidationError } from '@nestjs/common';
 import { ValidationException, ValidationFilter } from './util/filter.validation';
-import momentTimezone from 'moment-timezone';
-import { ConfigService } from '@nestjs/config';
-import moment from 'moment';
+import { WinstonModule } from 'nest-winston';
+import { winstonLogger } from './winston.logger';
+
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule/*, { logger: winstonLogger }*/);
   app.setGlobalPrefix('/api');
 
   app.useGlobalFilters(new ValidationFilter());

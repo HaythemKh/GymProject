@@ -21,7 +21,7 @@ export class SubsMembership {
     @Prop({required:true})
     Duration : number;
 
-    @Prop({required:false,immutable : true, default : Date.now})
+    @Prop({required:true,immutable : true, default : Date.now})
     createdAt : Date;
 
 }

@@ -45,4 +45,11 @@ export class SubsMembershipController {
   async MySubscriptions(@Request() req : any) : Promise<subsmembership[]>{
     return await this.subsMembershipService.PreviousSubscriptions(req);
   }
+
+
+  // @UseGuards(AuthGuard("jwt"))
+  // @Get("/Member/LastOne")
+  // async LastOne(@Request() req : any) : Promise<subsmembership>{
+  //   return await this.subsMembershipService.LastOne(req);
+  // }
 }

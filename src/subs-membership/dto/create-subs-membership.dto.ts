@@ -1,5 +1,5 @@
 import { Exclude } from "class-transformer";
-import {  IsBooleanString, IsDateString, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsString } from "class-validator";
+import {  IsBooleanString, IsDate, IsDateString, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class CreateSubsMembershipDto {
 
@@ -25,4 +25,8 @@ export class CreateSubsMembershipDto {
     @IsNotEmpty()
     @IsNumber()
     Duration : number;
+
+    @IsOptional()
+    @IsDate()
+    createdAt : Date;
 }

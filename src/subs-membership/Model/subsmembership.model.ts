@@ -6,6 +6,7 @@ export class subsmembership {
     public readonly IsActive : Boolean;
     public readonly Price : number;
     public readonly Duration : number;
+    public readonly createdAt : Date;
 
     constructor(subsData : any)
     {
@@ -15,5 +16,6 @@ export class subsmembership {
         this.IsActive = subsData.IsActive;
         this.Price = subsData.Price;
         this.Duration = subsData.Duration;
+        this.createdAt = subsData.createdAt;
     }
 }

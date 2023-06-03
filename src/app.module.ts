@@ -13,6 +13,7 @@ import { RegistrationModule } from './registration/registration.module';
 import { SubsMembershipModule } from './subs-membership/subs-membership.module';
 import { SendEmailModule } from './send-email/send-email.module';
 import { ReportModule } from './report/report.module';
+import { WinstonModule } from 'nest-winston';
 
 @Module({
   imports: [
