@@ -4,6 +4,7 @@ export class registration {
     public readonly Course : string;
     public readonly IsActive : Boolean
     public readonly Duration : number;
+    public readonly Price : number;
 
     constructor(Data : any){
         this._id = Data._id;
@@ -11,5 +12,6 @@ export class registration {
         this.Course = Data.Course;
         this.IsActive = Data.IsActive;
         this.Duration = Data.Duration;
+        this.Price = Data.Price;
     }
 }

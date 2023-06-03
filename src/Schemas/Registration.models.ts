@@ -18,6 +18,9 @@ export class Registration {
     @Prop({required:true})
     Duration : number;
 
+    @Prop({required:true})
+    Price : number;
+
     @Prop({required:false,immutable : true, default : Date.now})
     createdAt : Date;
 

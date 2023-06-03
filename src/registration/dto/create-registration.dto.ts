@@ -22,4 +22,8 @@ export class CreateRegistrationDto {
     @IsNumber()
     Duration : number;
 
+    @IsNotEmpty()
+    @IsNumber()
+    Price : number;
+
 }
