@@ -144,19 +144,29 @@ export class UsersService {
  async update(id: string, updateUserDto: UpdateUserDto, req : any) : Promise<any> {
 
   if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
-
+    
    this.verifValidId(id);
    const foundDocument = await this.userModel.findOne({ _id: id,Gym : req.user.gym }).exec();
    if(isEmpty(foundDocument)) throw new NotFoundException("user doesn't exist");
    else
    {
+    if(updateUserDto.Email)
+    {
+      const userEmail = await this.userModel.findOne({Email : updateUserDto.Email});
+      if(userEmail && userEmail._id.toString() !== foundDocument._id.toString())throw new NotFoundException("Email Exist");
+    }
+    if(updateUserDto.Phone)
+    {
+      const userPhone = await this.userModel.findOne({Phone : updateUserDto.Phone});
+      if(userPhone && userPhone._id.toString() !== foundDocument._id.toString())throw new NotFoundException("phone number Exist");
+    }
+
     if(updateUserDto.Password)
     {
       let hashedPassword = await bcrypt.hash(updateUserDto.Password,10);
       updateUserDto.Password = hashedPassword;
     } else
       updateUserDto.Password = foundDocument.Password;
-
 
     let user : User = null;
 
@@ -222,9 +232,10 @@ async updateProfile(updateUserDto: UpdateUserDto, req : any) : Promise<any> {
 
     let user : User = null;
 
-    if (foundDocument.Role === Role.ADMIN)  user = new admin(updateUserDto);
+    if (foundDocument.Role === Role.ADMIN) user = new admin(updateUserDto);
     else if(foundDocument.Role === Role.MEMBER) user = new member(updateUserDto);
     else if(foundDocument.Role === Role.TRAINER)  user = new trainer(updateUserDto);
+    
 
    const updatedUser = await this.userModel.findByIdAndUpdate(
      {_id : req.user.sub},

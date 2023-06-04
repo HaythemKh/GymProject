@@ -1,7 +1,7 @@
 
 import {Role} from "src/Schemas/users.models"
 import { Gender } from 'src/Schemas/users.models';
-import {IsNotEmpty,IsEmail,IsOptional,IsNumber,IsDate,IsString,IsEnum,IsPhoneNumber, IsDateString, IsNumberString } from 'class-validator'
+import {IsNotEmpty,IsEmail,IsOptional,IsNumber,IsDate,IsString,IsEnum,IsPhoneNumber, IsDateString, IsNumberString, Min, Max, Length } from 'class-validator'
 import { Exclude, plainToClass } from 'class-transformer';
 export class CreateUserDto {
 
@@ -9,20 +9,19 @@ export class CreateUserDto {
     _id : string;
 
     @IsNotEmpty()
-    @IsString()
+    @Length(3, 30)
     firstName : string;
 
     @IsNotEmpty()
-    @IsString()
+    @Length(3, 30)
     lastName : string;
 
     @IsNotEmpty()
     @IsEmail()
-    @IsString()
     Email : string;
 
     @IsNotEmpty()
-    @IsString()
+    @Length(8, 20)
     Password : string;
 
     @IsNotEmpty()
@@ -34,24 +33,29 @@ export class CreateUserDto {
     BirthDate : Date;
 
     @IsNotEmpty()
-    @IsString()
+    @Length(5, 50)
     Address : string;
 
-    @IsPhoneNumber('TN')
     @IsNotEmpty()
-    @IsString()
+    @IsPhoneNumber('TN')
     Phone : string;
     
-    @IsNumber()
     @IsNotEmpty()
+    @IsNumber()
+    @Min(140)
+    @Max(300)
     Height : number;
     
-    @IsNumber()
     @IsNotEmpty()
+    @IsNumber()
+    @Min(40)
+    @Max(300)
     Weight : number;
     
-    @IsNumber()
     @IsOptional()
+    @IsNumber()
+    @Min(500)
+    @Max(5000)
     Salary : number;
 
     @IsOptional()

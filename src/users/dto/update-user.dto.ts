@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import {IsEmail,IsOptional,IsNumber,IsString,IsPhoneNumber, IsNumberString, IsDateString } from 'class-validator'
+import {IsEmail,IsOptional,IsNumber,IsString,IsPhoneNumber, IsNumberString, IsDateString, Max, Min, Length } from 'class-validator'
 import { Role } from 'src/Schemas/users.models';
 export class UpdateUserDto{
 
@@ -10,20 +10,19 @@ export class UpdateUserDto{
     Role : string;
     
     @IsOptional()
-    @IsString()
+    @Length(3, 30)
     firstName : string;
 
     @IsOptional()
-    @IsString()
+    @Length(3, 30)
     lastName : string;
 
     @IsOptional()
     @IsEmail()
-    @IsString()
     Email : string;
 
     @IsOptional()
-    @IsString()
+    @Length(8, 20)
     Password : string;
 
     @IsOptional()
@@ -31,24 +30,29 @@ export class UpdateUserDto{
     BirthDate : Date;
 
     @IsOptional()
-    @IsString()
+    @Length(5, 50)
     Address : string;
 
-    @IsPhoneNumber('TN')
     @IsOptional()
-    @IsString()
+    @IsPhoneNumber('TN')
     Phone : string;
 
     @IsOptional()
     @IsNumber()
+    @Min(140)
+    @Max(300)
     Height : number;
     
     @IsOptional()
     @IsNumber()
+    @Min(40)
+    @Max(300)
     Weight : number;
     
-    @IsNumber()
     @IsOptional()
+    @IsNumber()
+    @Min(500)
+    @Max(5000)
     Salary : number;
 
     @Exclude()

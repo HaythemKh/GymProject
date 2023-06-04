@@ -34,8 +34,9 @@ export class ReservationService {
 
   async create(createReservationDto: CreateReservationDto, req : any) : Promise<any> {
 
-    if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Only Member can reservate a specific equipment !!");
+    if(req.user.role === Role.TRAINER) throw new UnauthorizedException("Only Member can reservate a specific equipment !!");
      if(!await this.SubsMemberService.isSubscribed(req.user.sub)) throw new BadRequestException("Please purchase a subscription before making a reservation.");
+     if(req.user.role !== Role.ADMIN)
      createReservationDto.User = req.user.sub;
     let reserve : reservation = new reservation(createReservationDto);
     reserve.setStartDate(createReservationDto.Start_time)
@@ -139,34 +140,25 @@ export class ReservationService {
   }
 
 
-  async validationUpdateReservation(updateReservationDto : UpdateReservationDto,req : any,previousReservation : reservation) : Promise<any>{
+  async validationUpdateReservation(reserve : reservation,req : any,previousReservation : reservation) : Promise<any>{
 
-    if(!updateReservationDto.Start_time || !updateReservationDto.End_time )
+    if(reserve.Start_time && reserve.End_time)
     {
-      updateReservationDto.Start_time = undefined;
-      updateReservationDto.End_time = undefined;
-    }
-
-    if(updateReservationDto.Start_time && updateReservationDto.End_time)
-    {
-      if(!updateReservationDto.Equipment)
-      updateReservationDto.Equipment = previousReservation.Equipment;
-      const reserve : reservation = new reservation(updateReservationDto);
-      reserve.setStartDate(updateReservationDto.Start_time);
-      reserve.setEndDate(updateReservationDto.End_time);
+      let equipment = previousReservation.Equipment;
       
-      if(updateReservationDto.Equipment)
+      if(reserve.Equipment)
       {
-        this.equipmentService.verifValidId(updateReservationDto.Equipment);
-        if(!this.equipmentService.IsEquipmentExist(updateReservationDto.Equipment)) throw new NotFoundException("Equipment doesn't Exist!");
+        equipment = reserve.Equipment;
+        this.equipmentService.verifValidId(reserve.Equipment);
+        if(!this.equipmentService.IsEquipmentExist(reserve.Equipment)) throw new NotFoundException("Equipment doesn't Exist!");
       }
-      if(updateReservationDto.User)
+      if(reserve.User)
       {
-        this.usersService.verifValidId(updateReservationDto.User);
+        this.usersService.verifValidId(reserve.User);
 
-        if(!this.usersService.IsUserExist(updateReservationDto.User)) throw new NotFoundException("User doesn't exist!");
+        if(!this.usersService.IsUserExist(reserve.User)) throw new NotFoundException("User doesn't exist!");
 
-        if(!this.SubsMemberService.isSubscribed(updateReservationDto.User)) throw new BadRequestException("Member doesn't have a subscription.");
+        if(!this.SubsMemberService.isSubscribed(reserve.User)) throw new BadRequestException("Member doesn't have a subscription.");
       }
 
       await this.validateReservation(reserve,reserve.Start_time,reserve.End_time);
@@ -197,8 +189,8 @@ export class ReservationService {
     const verifexist = await this.reservationModel.findOne({Equipment :reserve.Equipment ,Start_time :reserve.Start_time,End_time : reserve.End_time });
     if(verifexist) throw new NotFoundException("this equipment is reservated at this time");
  
-    let verif2 = await this.reservationModel.findOne({Equipment :reserve.Equipment ,Start_time :{ $gte: reserve.Start_time, $lt: reserve.End_time }});
-    const verif3 = await this.reservationModel.findOne({Equipment :reserve.Equipment ,End_time : { $gt: reserve.Start_time, $lte: reserve.End_time } });
+    let verif2 = await this.reservationModel.findOne({Equipment :equipment ,Start_time :{ $gte: reserve.Start_time, $lt: reserve.End_time }});
+    const verif3 = await this.reservationModel.findOne({Equipment :equipment ,End_time : { $gt: reserve.Start_time, $lte: reserve.End_time } });
     if(verif2 || verif3) throw new BadRequestException('Equipment is not available during the specified time slot.');
     
     let StartTime = new Date(Date.parse(`01/01/2000`));
@@ -209,7 +201,7 @@ export class ReservationService {
     EndTime.setUTCMinutes(reserve.End_time.getUTCMinutes());
     EndTime.setUTCHours(reserve.End_time.getUTCHours());
 
-    if(await this.verifCourseEquipmentTimes(reserve.Equipment,reserve.Start_time.getDay(),StartTime,EndTime))
+    if(await this.verifCourseEquipmentTimes(equipment,reserve.Start_time.getDay(),StartTime,EndTime))
     throw new BadRequestException("This equipment reserved by course in this time");
 
     }
@@ -262,17 +254,29 @@ export class ReservationService {
     this.verifValidId(id);
     const findDoc = await this.reservationModel.findOne({_id : id});
     if(isEmpty(findDoc)) throw new NotFoundException("reservation doesn't exist");
+
     let previousReservation : reservation = new reservation(findDoc);
-    await this.validationUpdateReservation(updateReservationDto,req,previousReservation);
-    let reserve : reservation = new reservation(updateReservationDto);
-    if(updateReservationDto.Start_time && updateReservationDto.End_time)
-    {
-      reserve.setStartDate(updateReservationDto.Start_time);
-      reserve.setEndDate(updateReservationDto.End_time);
-    }
-    const updatedReservation = await this.reservationModel.findByIdAndUpdate(
+    let currentReservation : reservation = new reservation(updateReservationDto);
+    currentReservation.setCorrectStartDate(updateReservationDto.Start_time);
+    currentReservation.setCorrectEndDate(updateReservationDto.End_time);
+
+    if((updateReservationDto.User && findDoc.User.toString() !== currentReservation.User.toString())
+    || (updateReservationDto.Equipment && findDoc.Equipment.toString() !== currentReservation.Equipment.toString())
+    || (updateReservationDto.Start_time && findDoc.Start_time.getTime() !== currentReservation.Start_time.getTime())
+) 
+await this.validationUpdateReservation(currentReservation,req,previousReservation);
+     
+
+    // let reserve : reservation = new reservation(updateReservationDto);
+    // if(updateReservationDto.Start_time && updateReservationDto.End_time)
+    // {
+    //   reserve.setStartDate(updateReservationDto.Start_time);
+    //   reserve.setEndDate(updateReservationDto.End_time);
+    // }
+
+     const updatedReservation = await this.reservationModel.findByIdAndUpdate(
       {_id : findDoc._id},
-      {$set: reserve},
+      {$set: currentReservation},
       {new: true},
     )
 
