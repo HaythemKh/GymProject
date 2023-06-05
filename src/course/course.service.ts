@@ -192,7 +192,7 @@ export class CourseService {
   verifValidId(id: string){
     const isHexString = /^[0-9a-fA-F]+$/.test(id);
     if(!isHexString || id.length != 24)
-     throw new NotFoundException("invalid Equipment ID");
+     throw new NotFoundException("invalid Course ID");
   }
 
   async findAll(req : any) : Promise<course[]> {
