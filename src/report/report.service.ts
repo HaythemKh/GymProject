@@ -19,7 +19,7 @@ export class ReportService {
 
   async create(createReportDto: CreateReportDto, req : any) : Promise<any> {
 
-    if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Only Members can get Access to This !!");
+    if(req.user.role=== Role.ADMIN) throw new UnauthorizedException("Only Members can get Access to This !!");
 
     const now = new Date();now.setHours(now.getHours() + 1);
     createReportDto.DateTime = now;

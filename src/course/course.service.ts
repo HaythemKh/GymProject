@@ -290,4 +290,24 @@ export class CourseService {
     });
      return listCourses;
   }
+
+  async updateAssignedCourse(id: string, updateCourseDto: UpdateDtoCourse, req : any) : Promise<any>  {
+    if(req.user.role !== Role.TRAINER) throw new UnauthorizedException("Only Trainer can get Access to This !!");
+
+    this.verifValidId(id);
+    const foundDocument = await this.CourseModel.findOne({ _id: id,Gym : req.user.gym}).exec();
+
+    if(isEmpty(foundDocument)) throw new NotFoundException("course doesn't exist");
+    const verifCourse = new course(foundDocument);
+    await this.validationCourseUpdateTimes(updateCourseDto,req,verifCourse);
+
+    const Course = new course(updateCourseDto);
+    const updatedCourse = await this.CourseModel.findByIdAndUpdate(
+      {_id : foundDocument._id},
+      {$set: Course},
+      {new: true},
+    )
+    if(!isEmpty(updatedCourse)) return {"message" : "Assigned course updated successfully"};
+    else throw new NotFoundException("updating assigned course denied");
+  }
 }

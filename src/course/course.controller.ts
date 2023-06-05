@@ -49,4 +49,10 @@ export class CourseController {
     return await this.courseService.AssignedCourses(req);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Patch("MyAssignedCourse/update")
+  async updateAssignedCourse(@Param('id') id: string,@Body() UpdateDtoCourse : UpdateDtoCourse,@Request() req : any) : Promise<any[]> {
+    return await this.courseService.updateAssignedCourse(id,UpdateDtoCourse,req);
+  }
+
 }
