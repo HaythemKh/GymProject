@@ -5,6 +5,7 @@ import { ValidationPipe,ValidationError } from '@nestjs/common';
 import { ValidationException, ValidationFilter } from './util/filter.validation';
 import { WinstonModule } from 'nest-winston';
 import { winstonLogger } from './winston.logger';
+import * as admin from 'firebase-admin';
 
 
 async function bootstrap() {

@@ -30,7 +30,7 @@ export class RegistrationService {
 
   ){}
 
-  async Join(createRegistrationDto: CreateRegistrationDto,req : any) : Promise<any> {
+  async createRegistration(createRegistrationDto: CreateRegistrationDto,req : any) : Promise<any> {
 
     if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Member only can get access to this !!");
 
@@ -132,7 +132,7 @@ export class RegistrationService {
     return expirationDate;
   }
 
-  async MyPreviousRegistrations(req : any) : Promise<registration[]>{
+  async MyRegistrations(req : any) : Promise<registration[]>{
 
     if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Only Members can get Access to This !!");
 

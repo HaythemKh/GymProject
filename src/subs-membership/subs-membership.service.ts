@@ -29,7 +29,7 @@ export class SubsMembershipService {
   ){}
 
 
-  async create(createSubsMembershipDto: CreateSubsMembershipDto,req : any) : Promise<any> {
+  async createMembership(createSubsMembershipDto: CreateSubsMembershipDto,req : any) : Promise<any> {
 
     if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Member only can get access to this !!");
 
@@ -64,7 +64,7 @@ export class SubsMembershipService {
      throw new NotFoundException("invalid subsMembership ID");
   }
 
-  async findAll(req : any) : Promise<any> {
+  async findAllMembership(req : any) : Promise<any> {
 
     if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
     

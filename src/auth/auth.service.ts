@@ -25,8 +25,8 @@ export class AuthService {
         const user = await this.userModel.findOne({Email : login.Email});
         if (!user || user.Role !== Role.ADMIN)  throw new UnauthorizedException("Credentials incorrect");
         const passwordMatch = await bcrypt.compare(login.Password,user.Password);
-        if (!passwordMatch) throw new UnauthorizedException("Invalid username or password");
-
+        if (!passwordMatch) throw new UnauthorizedException("Invalid email or password");
+        console.log(login.deviceToken);
         return this.SignUser(user._id,user.Email,user.Role,user.Gym);
     }
 
@@ -35,7 +35,7 @@ export class AuthService {
         if(!user || (user.Role === Role.ADMIN))
             throw new UnauthorizedException("Credentials incorrect");
         const passwordMatch = await bcrypt.compare(login.Password,user.Password);
-        if(!passwordMatch) throw new UnauthorizedException("Invalid username or password");
+        if(!passwordMatch) throw new UnauthorizedException("Invalid email or password");
 
         return this.SignUser(user._id,user.Email,user.Role,user.Gym);
     }

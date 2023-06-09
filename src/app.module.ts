@@ -14,6 +14,7 @@ import { SubsMembershipModule } from './subs-membership/subs-membership.module';
 import { SendEmailModule } from './send-email/send-email.module';
 import { ReportModule } from './report/report.module';
 import { WinstonModule } from 'nest-winston';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -31,7 +32,8 @@ import { WinstonModule } from 'nest-winston';
     SubsMembershipModule,
     SendEmailModule,
     ReportModule,
-  ],
+    NotificationModule,
+    ],
   controllers: [],
   providers: [],
   exports : []

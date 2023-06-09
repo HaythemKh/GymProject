@@ -17,7 +17,7 @@ export class ReportService {
     @InjectModel(Person.name) private userModel : Model<UserDocument>, 
   ){}
 
-  async create(createReportDto: CreateReportDto, req : any) : Promise<any> {
+  async createReport(createReportDto: CreateReportDto, req : any) : Promise<any> {
 
     if(req.user.role=== Role.ADMIN) throw new UnauthorizedException("Only Members and Trainer can get Access to This !!");
 

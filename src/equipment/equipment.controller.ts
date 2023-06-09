@@ -41,7 +41,7 @@ export class EquipmentController {
 
   @UseGuards(AuthGuard("jwt"))
   @Get("/Member/AllAvailableEquipments")
-  async AllEquipmentAvailable(@Request() req:any) : Promise<equipment[]>
+  async AllAvailableEquipment(@Request() req:any) : Promise<equipment[]>
   {
     return this.equipmentService.AvailableEquipment(req);
   }

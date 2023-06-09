@@ -65,6 +65,9 @@ export class Person {
 
     @Prop({required:false, default: undefined})
     resetPasswordExpiresCode: Date;
+
+    @Prop({required:false, default: undefined})
+    deviceTokens : string[];
     
 }
 function formatDate(date: Date) {

@@ -11,8 +11,8 @@ export class RegistrationController {
 
   @UseGuards(AuthGuard("jwt"))
   @Post("createRegistration")
-  async create(@Body() createRegistrationDto: CreateRegistrationDto,@Request() req : any) : Promise<any> {
-    return await this.registrationService.Join(createRegistrationDto,req);
+  async createRegistration(@Body() createRegistrationDto: CreateRegistrationDto,@Request() req : any) : Promise<any> {
+    return await this.registrationService.createRegistration(createRegistrationDto,req);
   }
 
   @UseGuards(AuthGuard("jwt"))
@@ -41,7 +41,7 @@ export class RegistrationController {
 
   @UseGuards(AuthGuard("jwt"))
   @Get("Member/MyPreviousRegistrations")
-  async myRegistrations(@Request() req : any) : Promise<registration[]>{
-    return await this.registrationService.MyPreviousRegistrations(req);
+  async MyRegistrations(@Request() req : any) : Promise<registration[]>{
+    return await this.registrationService.MyRegistrations(req);
   }
 }

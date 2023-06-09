@@ -12,14 +12,14 @@ export class SubsMembershipController {
 
   @UseGuards(AuthGuard("jwt"))
   @Post("CreateSubsMembership")
-  async create(@Body() createSubsMembershipDto: CreateSubsMembershipDto,@Request() req : any) : Promise<any> {
-    return await this.subsMembershipService.create(createSubsMembershipDto,req);
+  async createMembership(@Body() createSubsMembershipDto: CreateSubsMembershipDto,@Request() req : any) : Promise<any> {
+    return await this.subsMembershipService.createMembership(createSubsMembershipDto,req);
   }
 
   @UseGuards(AuthGuard("jwt"))
   @Get("AllMemberships")
-  async findAll(@Request() req : any) : Promise<any> {
-    return await this.subsMembershipService.findAll(req);
+  async findAllMembership(@Request() req : any) : Promise<any> {
+    return await this.subsMembershipService.findAllMembership(req);
   }
 
   @UseGuards(AuthGuard("jwt"))
@@ -47,9 +47,9 @@ export class SubsMembershipController {
   }
 
 
-  @UseGuards(AuthGuard("jwt"))
-  @Get("/Member/LastOne")
-  async LastOne(@Request() req : any) : Promise<subsmembership>{
-    return await this.subsMembershipService.LastOne(req);
-  }
+  // @UseGuards(AuthGuard("jwt"))
+  // @Get("/Member/LastOne")
+  // async LastOne(@Request() req : any) : Promise<subsmembership>{
+  //   return await this.subsMembershipService.LastOne(req);
+  // }
 }

@@ -26,7 +26,7 @@ export class CourseService {
   ){}
 
 
-  async create(createCourseDto: CreateCourseDto,req : any) : Promise<any> {
+  async createCourse(createCourseDto: CreateCourseDto,req : any) : Promise<any> {
 
     if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
 

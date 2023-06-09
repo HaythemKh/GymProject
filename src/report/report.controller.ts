@@ -9,8 +9,8 @@ export class ReportController {
 
   @UseGuards(AuthGuard("jwt"))
   @Post("createMemberReport")
-  async create(@Body() createReportDto: CreateReportDto,@Request() req : any) : Promise<any> {
-    return await this.reportService.create(createReportDto,req);
+  async createReport(@Body() createReportDto: CreateReportDto,@Request() req : any) : Promise<any> {
+    return await this.reportService.createReport(createReportDto,req);
   }
 
   @UseGuards(AuthGuard("jwt"))

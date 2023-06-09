@@ -4,7 +4,6 @@ import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { reservation } from './Model/reservation.model';
 import { AuthGuard } from '@nestjs/passport';
-import { AnyFilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('reservation')
 export class ReservationController {

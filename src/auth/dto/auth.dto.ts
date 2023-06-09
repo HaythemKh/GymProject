@@ -8,6 +8,9 @@ export class AuthDto {
 
     @IsString()
     Password : string;
+
+    @IsString()
+    deviceToken : string;
 }
 
     export class SendEmailDto {
