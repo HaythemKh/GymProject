@@ -38,19 +38,25 @@ export class SubsMembershipService {
 
     const SubsList = await this.gymService.getSubscriptionsListByGym(req.user.gym);
 
-    const verif = await this.subsMembershipModel.findOne({Member : req.user.sub,IsActive : true});
-    if(verif){
-      const SubsMembershipModel = await this.subsMembershipModel.findOne({Member : req.user.sub,IsActive : true}).sort({createdAt : -1});
-      const now = new Date(SubsMembershipModel.createdAt);
-      const creationTime : Date = new Date(now.getTime() + (createSubsMembershipDto.Duration * 24 * 60 * 60 * 1000));
-      createSubsMembershipDto.createdAt = creationTime;
-    }
-    const Register = new subsmembership(createSubsMembershipDto);
-    // const Member = await this.subsMembershipModel.countDocuments({Member : req.user.sub,Subscription : {$in : SubsList},IsActive : true});
-    // if(Member !== 0) throw new BadRequestException("You already subscribed to another subscription");
-    const created = await this.subsMembershipModel.create(Register);
-    if(!created) throw new BadRequestException("there is a problem in the creation of the subsMembership")
-    return "subsMembership created successfully";
+    const latestSub = await this.subsMembershipModel.findOne({ Member: req.user.sub, IsActive: true }).sort({ createdAt: -1 });
+    let creationTime: Date;
+    if (latestSub) {
+      const endTime = latestSub.createdAt.getTime() + (latestSub.Duration * 24 * 60 * 60 * 1000);
+      const now = new Date(endTime);
+      creationTime = now;
+     } else
+       creationTime = new Date(Date.now() + (createSubsMembershipDto.Duration * 24 * 60 * 60 * 1000));
+
+       //console.log(creationTime);
+
+        createSubsMembershipDto.createdAt = creationTime;
+         const Register = new subsmembership(createSubsMembershipDto);
+    //   // const Member = await this.subsMembershipModel.countDocuments({Member : req.user.sub,Subscription : {$in : SubsList},IsActive : true});
+    //   // if(Member !== 0) throw new BadRequestException("You already subscribed to another subscription");
+      const created = await this.subsMembershipModel.create(Register);
+      if(!created) throw new BadRequestException("there is a problem in the creation of the subsMembership")
+      return "subsMembership created successfully";
+
   }
 
   async isSubscribed(id : string) : Promise<boolean>{

@@ -26,19 +26,26 @@ export class RegistrationService {
     @Inject(UsersService) private  usersService : UsersService,
     @Inject(GymService) private  gymService : GymService,
     @InjectModel(Course.name) private CourseModel : Model<CourseDocument>,
-    @InjectModel(Person.name) private userModel : Model<UserDocument>, 
+    @InjectModel(Person.name) private userModel : Model<UserDocument>,
 
   ){}
 
   async createRegistration(createRegistrationDto: CreateRegistrationDto,req : any) : Promise<any> {
 
     if(req.user.role !== Role.MEMBER) throw new UnauthorizedException("Member only can get access to this !!");
-
     this.verifValidIdCourse(createRegistrationDto.Course);
+    const course = await this.CourseModel.findOne({_id : createRegistrationDto.Course}).exec();
+    if (!course) throw new BadRequestException('Course doesnt exist');
+
     createRegistrationDto.Member = req.user.sub;
 
     const verif = await this.registrationModel.findOne({Member : req.user.sub,Course :createRegistrationDto.Course });
-    if(verif) throw new BadRequestException("You are already subscribed to this course");
+    if(verif) throw new BadRequestException("You are already registered to this course");
+
+    const activeRegistrationsCount = await this.registrationModel.count({ Course: createRegistrationDto.Course, IsActive: true }).exec();
+    if (activeRegistrationsCount >= course.Capacity) {
+      throw new BadRequestException('Course is full');
+    }
     const Register = new registration(createRegistrationDto);
     const created = await this.registrationModel.create(Register);
     if(!created) throw new BadRequestException("there is a problem in the creation of the registration")

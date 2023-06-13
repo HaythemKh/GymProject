@@ -22,7 +22,6 @@ export class UpdateUserDto{
     Email : string;
 
     @IsOptional()
-    @Length(8, 20)
     Password : string;
 
     @IsOptional()

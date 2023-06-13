@@ -9,6 +9,7 @@ export class AuthDto {
     @IsString()
     Password : string;
 
+    @IsOptional()
     @IsString()
     deviceToken : string;
 }
