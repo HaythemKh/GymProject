@@ -190,6 +190,17 @@ export class GymService {
     return myList;
   }
 
+  async getMemberListByGym(gym : string) : Promise<string[]>{
+    const currrentGym = await this.gymModel.findOne({_id: gym}).exec();
+    const myList = currrentGym.users;
+    const ListMembers : string[] = [];
+    const members = await this.userModel.find({_id : {$in : myList},Role : Role.MEMBER}).exec();
+    for(const member of members)
+    ListMembers.push(member._id);
+  
+    return ListMembers;
+  }
+
   async getCourseListByGym(gym : string) : Promise<string[]>{
     const currrentGym = await this.gymModel.findOne({_id: gym}).exec();
     const myList = currrentGym.courses;
@@ -317,7 +328,6 @@ export class GymService {
   async RevenuesGym3WeekAgo(users : string[]) : Promise<number>{
     let sum : number = await this.subscriptions3WeekAgo(users) + await this.Registrations3WeekAgo(users);
     return sum;
-
   }
 
   async RevenuesGymMonthAgo(users : string[]) : Promise<number>{
@@ -353,10 +363,9 @@ export class GymService {
 
   async AllStatistics(req : any) : Promise<any>
   {
-    const UserList = await this.getUserListByGym(req.user.gym);
+    const UserList = await this.getMemberListByGym(req.user.gym);
 
 const [
-  AllMemberships,
   TotalRevenuesSubscriptions,
   TotalRevenuesCourses,
   RegistrationsMonthAgo,
@@ -368,10 +377,8 @@ const [
   RevenueGym2WeekAgo,
   RevenueGym3WeekAgo,
   RevenueGymMonthAgo,
-  MembersActiveSubscriptions,
-  MembersInActiveSubscriptions,
+  AllMembers,
 ] = await Promise.all([
-  this.subsMembershipModel.find({Member : {$in : UserList}}).exec(),
   this.TotalRevenuesSubscriptions(UserList),
   this.TotalRevenuesCourses(UserList),
   this.RegistrationsMonthAgo(UserList),
@@ -383,12 +390,13 @@ const [
   this.RevenuesGym2WeekAgo(UserList),
   this.RevenuesGym3WeekAgo(UserList),
   this.RevenuesGymMonthAgo(UserList),
-  this.subsMembershipModel.countDocuments({Member : {$in : UserList},IsActive : true}),
   this.userModel.countDocuments({Role : Role.MEMBER})
 ]);
-
-let TotalActiveMembers = MembersActiveSubscriptions;
-let TotalInactiveMembers = MembersInActiveSubscriptions - TotalActiveMembers;
+const ActiveMembers = await this.subsMembershipModel.find({Member : {$in : UserList},IsActive : true}).distinct('Member').exec();
+let sum = 0 ;
+for(const number of ActiveMembers) sum+=1;
+let TotalActiveMembers = sum;
+let TotalInactiveMembers = AllMembers - TotalActiveMembers;
 
 return {
   TotalRevenuesSubscriptions,
@@ -409,7 +417,7 @@ return {
 
   async AllStatisticsChart(req : any) : Promise<any[]>
   {
-    const UserList = await this.getUserListByGym(req.user.gym);
+    const UserList = await this.getMemberListByGym(req.user.gym);
 
 const [
   RevenueSubscriptionPerWeek,
