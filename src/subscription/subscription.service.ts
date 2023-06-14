@@ -33,7 +33,7 @@ export class SubscriptionService {
     const created = await this.subscriptionModel.create(createSubscriptionDto);
     if(!created) throw new NotFoundException("problem with subscription creation ");
     await this.gymService.addSubscriptionToList(createSubscriptionDto.Gym,created._id);
-
+    
      return {"message" : "susbscription added successfully"};
   }
 

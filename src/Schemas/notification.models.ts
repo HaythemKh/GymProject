@@ -6,8 +6,11 @@ export type NotificationDocument = Notification & Document;
 @Schema({ collection: 'notification' })
 export class Notification {
 
-    @Prop({ required:true})
+    @Prop({ required:false})
     User : string;
+
+    @Prop({ required:false})
+    Gym : string;
 
     @Prop({ required:true})
     Title : string;

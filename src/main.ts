@@ -6,6 +6,7 @@ import { ValidationException, ValidationFilter } from './util/filter.validation'
 import { WinstonModule } from 'nest-winston';
 import { winstonLogger } from './winston.logger';
 import * as admin from 'firebase-admin';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 
 async function bootstrap() {
@@ -13,7 +14,7 @@ async function bootstrap() {
   app.setGlobalPrefix('/api');
 
   app.useGlobalFilters(new ValidationFilter());
-  
+
   app.useGlobalPipes(new ValidationPipe({
     skipMissingProperties : false,
     exceptionFactory : (errors : ValidationError[]) => {
@@ -26,7 +27,7 @@ async function bootstrap() {
   }),
   );
   app.use(cors());
-  
+  app.useWebSocketAdapter(new IoAdapter(app));
   const port = process.env.PORT;
   await app.listen(port);
 }

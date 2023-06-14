@@ -4,6 +4,7 @@ import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
 import { GymConfigService } from 'src/gym-config/gym-config.service';
 import { GymService } from 'src/gym/gym.service';
+import { NotificationService } from 'src/notification/notification.service';
 import { Course, CourseDocument } from 'src/Schemas/course.models';
 import { Registration, RegistrationDocument } from 'src/Schemas/Registration.models';
 import { Person, Role, UserDocument } from 'src/Schemas/users.models';
@@ -23,6 +24,7 @@ export class CourseService {
     @InjectModel(Person.name) private userModel : Model<UserDocument>,
     @InjectModel(Registration.name) private registrationModel : Model<RegistrationDocument>,
     @Inject(GymConfigService) private  gymConfigService : GymConfigService,
+    @Inject(NotificationService) private  notificationService : NotificationService,
   ){}
 
 
@@ -30,21 +32,23 @@ export class CourseService {
 
     if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
 
-    await this.validationCourseCreation(createCourseDto,req);
-    createCourseDto.Gym = req.user.gym;
+    // await this.validationCourseCreation(createCourseDto,req);
+    // createCourseDto.Gym = req.user.gym;
 
-    let StartTime = new Date(Date.parse(`01/01/2000 ${createCourseDto.StartDate}`));
-    let EndTime =  new Date(Date.parse(`01/01/2000 ${createCourseDto.EndDate}`));
-    createCourseDto.StartDate = StartTime;
-    createCourseDto.EndDate = EndTime;
+    // let StartTime = new Date(Date.parse(`01/01/2000 ${createCourseDto.StartDate}`));
+    // let EndTime =  new Date(Date.parse(`01/01/2000 ${createCourseDto.EndDate}`));
+    // createCourseDto.StartDate = StartTime;
+    // createCourseDto.EndDate = EndTime;
 
-    let Course : course = new course(createCourseDto);
+    // let Course : course = new course(createCourseDto);
 
-    const created = await this.CourseModel.create(Course);
-    if(!created) throw new NotFoundException("problem with Course creation ");
-    await this.gymService.addCourseToList(createCourseDto.Gym,created._id);
+    // const created = await this.CourseModel.create(Course);
+    // if(!created) throw new NotFoundException("problem with Course creation ");
+    // await this.gymService.addCourseToList(createCourseDto.Gym,created._id);
 
-     return {"message" : "Course added successfully"};
+    //  return {"message" : "Course added successfully"};
+
+    this.notificationService.SendNotification("123","new course available");
   }
 
   async validationCourseCreation(data : CreateCourseDto,req: any) : Promise<any>

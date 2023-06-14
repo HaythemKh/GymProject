@@ -8,6 +8,7 @@ import { UsersModule } from 'src/users/users.module';
 import { Person, UserSchema } from 'src/Schemas/users.models';
 import { Registration, RegistrationSchema } from 'src/Schemas/Registration.models';
 import { GymConfigModule } from 'src/gym-config/gym-config.module';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports : [
@@ -17,6 +18,7 @@ import { GymConfigModule } from 'src/gym-config/gym-config.module';
     GymModule,
     UsersModule,
     GymConfigModule,
+    NotificationModule
   ],
   controllers: [CourseController],
   providers: [CourseService],
