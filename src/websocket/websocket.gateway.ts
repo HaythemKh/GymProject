@@ -1,14 +1,5 @@
-import {
-    WebSocketGateway,
-    SubscribeMessage,
-    WebSocketServer,
-    OnGatewayConnection,
-    OnGatewayDisconnect,
-  } from '@nestjs/websockets';
+import {WebSocketGateway,SubscribeMessage,WebSocketServer,OnGatewayConnection,OnGatewayDisconnect,} from '@nestjs/websockets';
   import { Server, Socket } from 'socket.io';
-  import * as socketio from 'socket.io';
-import { IoAdapter } from '@nestjs/platform-socket.io';
-import * as http from 'http';
 
   
   @WebSocketGateway()
