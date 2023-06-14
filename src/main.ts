@@ -26,14 +26,7 @@ async function bootstrap() {
   }),
   );
   app.use(cors());
-  const ioAdapter = new IoAdapter(app);
-  ioAdapter.createIOServer(4000, {
-    cors: {
-      origin: '*',
-      methods: ['GET', 'POST'],
-    },
-  });
-  app.useWebSocketAdapter(ioAdapter);
+  app.useWebSocketAdapter(new IoAdapter(app));
   const port = process.env.PORT;
   await app.listen(port);
 }

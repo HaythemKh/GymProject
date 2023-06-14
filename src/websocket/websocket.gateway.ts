@@ -1,5 +1,6 @@
+import { IoAdapter } from '@nestjs/platform-socket.io';
 import {WebSocketGateway,SubscribeMessage,WebSocketServer,OnGatewayConnection,OnGatewayDisconnect,} from '@nestjs/websockets';
-  import { Server, Socket } from 'socket.io';
+  import { Server, ServerOptions, Socket } from 'socket.io';
 
   
   @WebSocketGateway()
@@ -26,4 +27,3 @@ import {WebSocketGateway,SubscribeMessage,WebSocketServer,OnGatewayConnection,On
       return true;
     }
   }
-
