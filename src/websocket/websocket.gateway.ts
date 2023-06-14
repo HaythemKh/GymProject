@@ -21,8 +21,9 @@ import {
     }
   
     @SubscribeMessage('message')
-    sendNotificationToClient(clientId: string, notification : any) {
+    sendNotificationToClient(clientId: string, notification : any) : boolean {
       this.server/*.to(clientId)*/.emit('notification', notification);
+      return true;
     }
   }
   
