@@ -7,8 +7,6 @@ import { WinstonModule } from 'nest-winston';
 import { winstonLogger } from './winston.logger';
 import * as admin from 'firebase-admin';
 import { IoAdapter } from '@nestjs/platform-socket.io';
-import { ServerOptions } from 'socket.io';
-import { CustomSocketIoAdapter } from './websocket/websocket.gateway';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule/*,{logger: WinstonModule.createLogger(winstonLogger)}*/);
@@ -28,12 +26,7 @@ async function bootstrap() {
   }),
   );
   app.use(cors());
-  app.enableCors({
-    origin: 'http://localhost:5173', // Replace with your React.js application URL
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'],
-  });
-  app.useWebSocketAdapter(new CustomSocketIoAdapter());
+  app.useWebSocketAdapter(new IoAdapter(app));
   const port = process.env.PORT;
   await app.listen(port);
 }

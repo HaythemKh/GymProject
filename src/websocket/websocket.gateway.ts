@@ -28,14 +28,3 @@ import {WebSocketGateway,SubscribeMessage,WebSocketServer,OnGatewayConnection,On
       return true;
     }
   }
-
-  export class CustomSocketIoAdapter extends IoAdapter {
-    createIOServer(port: number): Server {
-      const server = super.createIOServer(port);
-  
-      // Apply the 'cors' middleware to the server
-      server.engineio?.app.use(cors());
-  
-      return server;
-    }
-  }
