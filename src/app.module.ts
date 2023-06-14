@@ -16,6 +16,7 @@ import { ReportModule } from './report/report.module';
 import { WinstonModule } from 'nest-winston';
 import { NotificationModule } from './notification/notification.module';
 import { WebsocketModule } from './websocket/websocket.module';
+import { SocketGateway } from './socket/socket.gateway';
 
 @Module({
   imports: [
@@ -37,7 +38,7 @@ import { WebsocketModule } from './websocket/websocket.module';
     WebsocketModule,
     ],
   controllers: [],
-  providers: [],
+  providers: [SocketGateway],
   exports : []
 })
 export class AppModule {}
