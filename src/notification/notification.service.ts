@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import {ServiceAccount} from 'firebase-admin'
 import { SocketGateway } from 'src/socket/socket.gateway';
@@ -12,7 +12,7 @@ export class NotificationService {
     //     //     credential: admin.credential.cert(serviceAccount as ServiceAccount),
     //     //   });
     // }
-    constructor(private readonly webSocketGateway: SocketGateway) {}
+    constructor(@Inject(SocketGateway) private readonly webSocketGateway: SocketGateway) {}
 
     async SendNotification(id : string, notification : any){
         this.webSocketGateway.sendNotificationToClient(id,notification);
