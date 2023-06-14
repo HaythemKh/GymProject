@@ -48,7 +48,7 @@ export class CourseService {
 
     //  return {"message" : "Course added successfully"};
 
-    if(this.notificationService.SendNotification("123","new course available")) console.log("working");
+    this.notificationService.SendNotification("123","new course available");
   }
 
   async validationCourseCreation(data : CreateCourseDto,req: any) : Promise<any>

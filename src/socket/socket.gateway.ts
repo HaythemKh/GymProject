@@ -15,7 +15,7 @@ export class SocketGateway {
   }
 
   @SubscribeMessage('message')
-    sendNotificationToClient(clientId: string, notification : any) {
-      this.server/*.to(clientId)*/.emit('notification', notification);
+    sendNotificationToClient(clientId: string, notification : any){
+      this.server.to(clientId).emit('notification', notification);
     }
 }
