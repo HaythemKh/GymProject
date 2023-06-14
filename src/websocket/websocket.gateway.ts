@@ -27,3 +27,17 @@ import {WebSocketGateway,SubscribeMessage,WebSocketServer,OnGatewayConnection,On
       return true;
     }
   }
+
+
+  export class CustomSocketIoAdapter extends IoAdapter {
+    createIOServer(port: number, options?: ServerOptions): any {
+      options = {
+        ...options,
+        cors: {
+          origin: '*',
+          methods: ['GET', 'POST'],
+        },
+      };
+      return super.createIOServer(port, options);
+    }
+  }
