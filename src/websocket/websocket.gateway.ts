@@ -1,6 +1,7 @@
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import {WebSocketGateway,SubscribeMessage,WebSocketServer,OnGatewayConnection,OnGatewayDisconnect,} from '@nestjs/websockets';
   import { Server, ServerOptions, Socket } from 'socket.io';
+  import * as cors from 'cors';
 
   
   @WebSocketGateway()
@@ -25,5 +26,16 @@ import {WebSocketGateway,SubscribeMessage,WebSocketServer,OnGatewayConnection,On
       this.server/*.to(clientId)*/.emit('notification', notification);
 
       return true;
+    }
+  }
+
+  export class CustomSocketIoAdapter extends IoAdapter {
+    createIOServer(port: number): Server {
+      const server = super.createIOServer(port);
+  
+      // Apply the 'cors' middleware to the server
+      server.engineio?.app.use(cors());
+  
+      return server;
     }
   }
