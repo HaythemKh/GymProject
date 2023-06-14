@@ -6,6 +6,8 @@ import { EquipmentService } from 'src/equipment/equipment.service';
 import { GymConfigService } from 'src/gym-config/gym-config.service';
 import { gymConfig } from 'src/gym-config/Model/gymConfig.model';
 import { GymService } from 'src/gym/gym.service';
+import { notification } from 'src/notification/notification.model';
+import { NotificationService } from 'src/notification/notification.service';
 import { Course, CourseDocument } from 'src/Schemas/course.models';
 import { Equipment, EquipmentDocument } from 'src/Schemas/equipment.models';
 import { Reservation, ReservationDocument } from 'src/Schemas/reservation.models';
@@ -30,6 +32,7 @@ export class ReservationService {
     @Inject(GymConfigService) private  gymConfigService : GymConfigService,
     @Inject(SubsMembershipService) private  SubsMemberService : SubsMembershipService,
     @InjectModel(Course.name) private CourseModel : Model<CourseDocument>,
+    @Inject(NotificationService) private  notificationService : NotificationService,
   ){}
 
   async create(createReservationDto: CreateReservationDto, req : any) : Promise<any> {
@@ -89,6 +92,14 @@ export class ReservationService {
 
     const created = await this.reservationModel.create(reserve);
     if(!created) throw new BadRequestException("problem with reservation");
+
+    const AdminData = {
+      "Gym" : req.user.gym,
+      "Title" : "Members reservations",
+      "Message" : `new member reserved equipment`
+    }
+    const notifAdmins = new notification(AdminData);
+    await this.notificationService.createNotification(notifAdmins);
 
     return {"message" : "Reservation added successfully"};
   }

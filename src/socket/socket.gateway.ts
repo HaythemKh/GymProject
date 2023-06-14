@@ -14,8 +14,13 @@ export class SocketGateway {
     console.log('Client disconnected : ', client.id);
   }
 
-  @SubscribeMessage('message')
-    sendNotificationToClient(clientId: string, notification : any){
+  @SubscribeMessage('sendNotification')
+    sendNotificationToClient(notification : any){
+      this.server.emit('notification', notification);
+    }
+
+    @SubscribeMessage('sendNotifications')
+    sendNotificationsToClients(notification : any){
       this.server.emit('notification', notification);
     }
 }

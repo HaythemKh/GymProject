@@ -13,6 +13,7 @@ import { UsersService } from 'src/users/users.service';
 import { UpdateDtoCourse } from './dto/CourseUpdate.dto';
 import { CreateCourseDto } from './dto/create-course.dto';
 import {  course } from './Model/course.model';
+import {notification} from 'src/notification/notification.model';
 
 @Injectable()
 export class CourseService {
@@ -32,23 +33,41 @@ export class CourseService {
 
     if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
 
-    // await this.validationCourseCreation(createCourseDto,req);
-    // createCourseDto.Gym = req.user.gym;
+    await this.validationCourseCreation(createCourseDto,req);
+    createCourseDto.Gym = req.user.gym;
 
-    // let StartTime = new Date(Date.parse(`01/01/2000 ${createCourseDto.StartDate}`));
-    // let EndTime =  new Date(Date.parse(`01/01/2000 ${createCourseDto.EndDate}`));
-    // createCourseDto.StartDate = StartTime;
-    // createCourseDto.EndDate = EndTime;
+    let StartTime = new Date(Date.parse(`01/01/2000 ${createCourseDto.StartDate}`));
+    let EndTime =  new Date(Date.parse(`01/01/2000 ${createCourseDto.EndDate}`));
+    createCourseDto.StartDate = StartTime;
+    createCourseDto.EndDate = EndTime;
 
-    // let Course : course = new course(createCourseDto);
+    let Course : course = new course(createCourseDto);
 
-    // const created = await this.CourseModel.create(Course);
-    // if(!created) throw new NotFoundException("problem with Course creation ");
-    // await this.gymService.addCourseToList(createCourseDto.Gym,created._id);
+    const created = await this.CourseModel.create(Course);
+    if(!created) throw new NotFoundException("problem with Course creation ");
+    await this.gymService.addCourseToList(createCourseDto.Gym,created._id);
+    const ListOfMembers = await this.gymService.getMemberListByGym(req.user.gym);
+    
+    for(const user of ListOfMembers)
+    {
+      const data = {
+        "User" : user,
+        "Title" : "Course of the gym",
+        "Message" : `New course ${created.Name} is available`
+      }
+      const notif = new notification(data);
+      await this.notificationService.createNotification(notif);
+    }
 
-    //  return {"message" : "Course added successfully"};
+    const trainerData = {
+      "User" : created.Trainer,
+      "Title" : "Assigned course of the gym",
+      "Message" : `You have new assigned course ${created.Name}`
+    }
+    const notifTrainer = new notification(trainerData);
+    await this.notificationService.createNotification(notifTrainer);
 
-    this.notificationService.SendNotification("123","new course available");
+     return {"message" : "Course added successfully"};
   }
 
   async validationCourseCreation(data : CreateCourseDto,req: any) : Promise<any>

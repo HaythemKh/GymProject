@@ -9,6 +9,7 @@ import { UsersModule } from 'src/users/users.module';
 import { SubscriptionModule } from 'src/subscription/subscription.module';
 import { Person, UserSchema } from 'src/Schemas/users.models';
 import { Subscription, SubscriptionSchema } from 'src/Schemas/subscription.models';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports : [
@@ -17,7 +18,8 @@ import { Subscription, SubscriptionSchema } from 'src/Schemas/subscription.model
     MongooseModule.forFeature([{name : Subscription.name, schema:SubscriptionSchema}]),
     UsersModule,
     SubscriptionModule,
-    GymModule
+    GymModule,
+    NotificationModule
   ],
   controllers: [SubsMembershipController],
   providers: [SubsMembershipService],

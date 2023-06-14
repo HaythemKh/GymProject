@@ -15,7 +15,6 @@ import { SendEmailModule } from './send-email/send-email.module';
 import { ReportModule } from './report/report.module';
 import { WinstonModule } from 'nest-winston';
 import { NotificationModule } from './notification/notification.module';
-import { WebsocketModule } from './websocket/websocket.module';
 import { SocketGateway } from './socket/socket.gateway';
 
 @Module({
@@ -35,7 +34,6 @@ import { SocketGateway } from './socket/socket.gateway';
     SendEmailModule,
     ReportModule,
     NotificationModule,
-    WebsocketModule,
     ],
   controllers: [],
   providers: [SocketGateway],

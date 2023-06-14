@@ -16,7 +16,7 @@ export class Notification {
     Title : string;
 
     @Prop({ required:true})
-    Message : string[];
+    Message : string;
 
     @Prop({ default: () => new Date(Date.now() + 60 * 60 * 1000) })
     DateTime: Date;

@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { NotificationController } from './notification.controller';
-import { WebsocketModule } from 'src/websocket/websocket.module';
-import { WebsocketGateway } from 'src/websocket/websocket.gateway';
 import { SocketGateway } from 'src/socket/socket.gateway';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Notification, NotificationSchema } from 'src/Schemas/notification.models';
+
 @Module({
-  imports : [WebsocketModule],
+  imports : [MongooseModule.forFeature([{name : Notification.name, schema:NotificationSchema}]),
+],
   providers: [NotificationService,SocketGateway],
   controllers: [NotificationController],
   exports : [NotificationService]

@@ -5,12 +5,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Subscription, SubscriptionSchema } from 'src/Schemas/subscription.models';
 import { GymModule } from 'src/gym/gym.module';
 import { SubsMembership, SubsMembershipSchema } from 'src/Schemas/subsmembership.models';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports : [
     MongooseModule.forFeature([{name : Subscription.name, schema:SubscriptionSchema}]),
     GymModule,
-    MongooseModule.forFeature([{name : SubsMembership.name, schema:SubsMembershipSchema}])
+    MongooseModule.forFeature([{name : SubsMembership.name, schema:SubsMembershipSchema}]),
+    NotificationModule
   ],
   controllers: [SubscriptionController],
   providers: [SubscriptionService],

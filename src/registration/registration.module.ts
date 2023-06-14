@@ -8,6 +8,7 @@ import { UsersModule } from 'src/users/users.module';
 import { GymModule } from 'src/gym/gym.module';
 import { Course, CourseSchema } from 'src/Schemas/course.models';
 import { Person, UserSchema } from 'src/Schemas/users.models';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports : [
@@ -16,7 +17,8 @@ import { Person, UserSchema } from 'src/Schemas/users.models';
     MongooseModule.forFeature([{name : Person.name, schema:UserSchema}]),
     UsersModule,
     CourseModule,
-    GymModule
+    GymModule,
+    NotificationModule
   ],
   controllers: [RegistrationController],
   providers: [RegistrationService],

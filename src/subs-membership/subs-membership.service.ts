@@ -5,6 +5,8 @@ import { addDays } from 'date-fns';
 import { Model } from 'mongoose';
 import { CourseService } from 'src/course/course.service';
 import { GymService } from 'src/gym/gym.service';
+import { notification } from 'src/notification/notification.model';
+import { NotificationService } from 'src/notification/notification.service';
 import { registration } from 'src/registration/Model/registration.model';
 import { Subscription, SubscriptionDocument } from 'src/Schemas/subscription.models';
 import { SubsMembership, SubsMembershipDocument } from 'src/Schemas/subsmembership.models';
@@ -25,7 +27,8 @@ export class SubsMembershipService {
     @InjectModel(Person.name) private userModel : Model<UserDocument>,
     @InjectModel(Subscription.name) private subscriptionModel : Model<SubscriptionDocument>,
     @Inject(UsersService) private  usersService : UsersService,
-    @Inject(GymService) private  gymService : GymService
+    @Inject(GymService) private  gymService : GymService,
+    @Inject(NotificationService) private  notificationService : NotificationService,
   ){}
 
 
@@ -55,6 +58,15 @@ export class SubsMembershipService {
     //   // if(Member !== 0) throw new BadRequestException("You already subscribed to another subscription");
       const created = await this.subsMembershipModel.create(Register);
       if(!created) throw new BadRequestException("there is a problem in the creation of the subsMembership")
+
+      const AdminData = {
+        "Gym" : req.user.gym,
+        "Title" : "Members subscriptions",
+        "Message" : `new member purchase subscription`
+      }
+      const notifAdmins = new notification(AdminData);
+      await this.notificationService.createNotification(notifAdmins);
+
       return "subsMembership created successfully";
 
   }

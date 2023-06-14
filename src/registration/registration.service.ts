@@ -15,6 +15,8 @@ import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { UpdateRegistrationDto } from './dto/update-registration.dto';
 import { registration } from './Model/registration.model';
 import { addDays } from 'date-fns';
+import { NotificationService } from 'src/notification/notification.service';
+import { notification } from 'src/notification/notification.model';
 
 
 @Injectable()
@@ -27,6 +29,7 @@ export class RegistrationService {
     @Inject(GymService) private  gymService : GymService,
     @InjectModel(Course.name) private CourseModel : Model<CourseDocument>,
     @InjectModel(Person.name) private userModel : Model<UserDocument>,
+    @Inject(NotificationService) private  notificationService : NotificationService,
 
   ){}
 
@@ -49,6 +52,15 @@ export class RegistrationService {
     const Register = new registration(createRegistrationDto);
     const created = await this.registrationModel.create(Register);
     if(!created) throw new BadRequestException("there is a problem in the creation of the registration")
+
+    const AdminData = {
+      "Gym" : req.user.gym,
+      "Title" : "Members registrations",
+      "Message" : `new member registered into course ${course.Name}`
+    }
+    const notifAdmins = new notification(AdminData);
+    await this.notificationService.createNotification(notifAdmins);
+    
     return "Registration created successfully";
   }
 

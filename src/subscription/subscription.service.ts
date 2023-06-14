@@ -4,6 +4,8 @@ import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
 import { course } from 'src/course/Model/course.model';
 import { GymService } from 'src/gym/gym.service';
+import { notification } from 'src/notification/notification.model';
+import { NotificationService } from 'src/notification/notification.service';
 import { Subscription, SubscriptionDocument } from 'src/Schemas/subscription.models';
 import { SubsMembership, SubsMembershipDocument } from 'src/Schemas/subsmembership.models';
 import { Role } from 'src/Schemas/users.models';
@@ -19,6 +21,7 @@ export class SubscriptionService {
     @InjectModel(Subscription.name) private subscriptionModel : Model<SubscriptionDocument>,
     @Inject(GymService) private  gymService : GymService,
     @InjectModel(SubsMembership.name) private subsMembershipModel : Model<SubsMembershipDocument>,
+    @Inject(NotificationService) private  notificationService : NotificationService,
   ){}
 
   async create(createSubscriptionDto: CreateSubscriptionDto,req :any) : Promise<any> {
@@ -33,6 +36,19 @@ export class SubscriptionService {
     const created = await this.subscriptionModel.create(createSubscriptionDto);
     if(!created) throw new NotFoundException("problem with subscription creation ");
     await this.gymService.addSubscriptionToList(createSubscriptionDto.Gym,created._id);
+
+    const ListOfMembers = await this.gymService.getMemberListByGym(req.user.gym);
+    
+    for(const user of ListOfMembers)
+    {
+      const data = {
+        "User" : user,
+        "Title" : "Subscription of the gym",
+        "Message" : `New subscription  ${created.Name} is available`
+      }
+      const notif = new notification(data);
+      await this.notificationService.createNotification(notif);
+    }
     
      return {"message" : "susbscription added successfully"};
   }

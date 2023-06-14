@@ -3,6 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { isEmpty } from 'class-validator';
 import { Model } from 'mongoose';
 import { GymService } from 'src/gym/gym.service';
+import { notification } from 'src/notification/notification.model';
+import { NotificationService } from 'src/notification/notification.service';
 import { EquipmentSchema,EquipmentDocument,Equipment } from 'src/Schemas/equipment.models';
 import { Role } from 'src/Schemas/users.models';
 import { CreateEquipmentDto } from './dto/create-equipment.dto';
@@ -17,7 +19,8 @@ export class EquipmentService {
 
   constructor(
     @InjectModel(Equipment.name) private EquipmentModel : Model<EquipmentDocument>,
-    @Inject(GymService) private  gymService : GymService
+    @Inject(GymService) private  gymService : GymService,
+    @Inject(NotificationService) private  notificationService : NotificationService,
   ){}
   
   async create(createEquipmentDto: CreateEquipmentDto,req:any) {
@@ -30,6 +33,19 @@ export class EquipmentService {
     const created = await this.EquipmentModel.create(createEquipmentDto);
     if(!created) throw new NotFoundException("problem with Equipment creation ");
     await this.gymService.addEquipmentToList(createEquipmentDto.Gym,created._id);
+
+    const ListOfMembers = await this.gymService.getMemberListByGym(req.user.gym);
+    
+    for(const user of ListOfMembers)
+    {
+      const data = {
+        "User" : user,
+        "Title" : "Equipment of the gym",
+        "Message" : "New equipment is available"
+      }
+      const notif = new notification(data);
+      await this.notificationService.createNotification(notif);
+    }
 
      return {"message" : "Equipment added successfully"};
     
