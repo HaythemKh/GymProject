@@ -28,11 +28,11 @@ export class NotificationService {
 
     async fetchGymNotifications(req : any) : Promise<any>{
         if(req.user.role !== Role.ADMIN) throw new UnauthorizedException("Only Admin can get Access to This !!");
-        const allNotifications = await this.NotificationModel.find({Gym : req.user.gym});
+        const allNotifications = await this.NotificationModel.find({Gym : req.user.gym}).sort({ _id: -1 });;
         return allNotifications;
     }
     async fetchUserNotifications(req : any) : Promise<any>{
-        const allNotifications = await this.NotificationModel.find({User : req.user.sub});
+        const allNotifications = await this.NotificationModel.find({User : req.user.sub}).sort({ _id: -1 });
         return allNotifications;
     }
 

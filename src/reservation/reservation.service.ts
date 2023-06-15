@@ -316,7 +316,7 @@ await this.validationUpdateReservation(currentReservation,req,previousReservatio
     
     const EquipmentList = await this.gymService.getEquipmentListByGym(req.user.gym);
 
-    const AllReservations = await this.reservationModel.find({User : req.user.sub,Equipment : {$in : EquipmentList}});
+    const AllReservations = await this.reservationModel.find({User : req.user.sub,Equipment : {$in : EquipmentList}}).sort({ _id: -1 });
     const results = [];
     for (const reservation of AllReservations) {
       const Member = await this.userModel.findById(reservation.User);

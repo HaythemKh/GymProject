@@ -157,7 +157,7 @@ export class RegistrationService {
 
     const CourseList = await this.gymService.getCourseListByGym(req.user.gym);
 
-    const AllRegistration = await this.registrationModel.find({Member : req.user.sub,Course :{$in : CourseList}}).exec();
+    const AllRegistration = await this.registrationModel.find({Member : req.user.sub,Course :{$in : CourseList}}).sort({ _id: -1 });
     const results = [];
 
       for (const registration of AllRegistration) {

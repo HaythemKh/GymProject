@@ -3,7 +3,7 @@ import mongoose, {Document}  from 'mongoose';
 
 export type NotificationDocument = Notification & Document;
 
-@Schema({ collection: 'notification' })
+@Schema({ collection: 'notification',timestamps: {createdAt: 'created_at' } })
 export class Notification {
 
     @Prop({ required:false})

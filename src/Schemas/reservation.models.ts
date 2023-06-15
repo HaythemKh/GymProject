@@ -3,7 +3,7 @@ import mongoose, {Document}  from 'mongoose';
 
 export type ReservationDocument = Reservation & Document;
 
-@Schema({ collection: 'reservation' })
+@Schema({ collection: 'reservation',timestamps: {createdAt: 'created_at' } })
 export class Reservation {
 
     @Prop({ required:true , type: mongoose.Schema.Types.ObjectId, ref: 'users'})

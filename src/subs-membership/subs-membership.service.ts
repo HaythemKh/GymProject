@@ -161,7 +161,7 @@ export class SubsMembershipService {
     
     const SubscriptionsList = await this.gymService.getSubscriptionsListByGym(req.user.gym);
 
-    const AllMemberships = await this.subsMembershipModel.find({Member : req.user.sub,Subscription : {$in : SubscriptionsList}}).exec();
+    const AllMemberships = await this.subsMembershipModel.find({Member : req.user.sub,Subscription : {$in : SubscriptionsList}}).sort({ _id: -1 });
     const results = [];
 
     for (const subsUsers of AllMemberships)
